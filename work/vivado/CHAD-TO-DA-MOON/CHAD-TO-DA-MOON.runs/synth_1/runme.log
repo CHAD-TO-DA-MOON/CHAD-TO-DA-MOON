@@ -1,0 +1,560 @@
+
+*** Running vivado
+    with args -log au_top_0.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source au_top_0.tcl
+
+
+
+****** Vivado v2021.2 (64-bit)
+  **** SW Build 3367213 on Tue Oct 19 02:48:09 MDT 2021
+  **** IP Build 3369179 on Thu Oct 21 08:25:16 MDT 2021
+    ** Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
+
+source au_top_0.tcl -notrace
+Command: synth_design -top au_top_0 -part xc7a35tftg256-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Device 21-403] Loading part xc7a35tftg256-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 13652
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 1235.254 ; gain = 0.000
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'au_top_0' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/au_top_0.v:7]
+INFO: [Synth 8-6157] synthesizing module 'button_conditioner_2' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/button_conditioner_2.v:13]
+INFO: [Synth 8-6157] synthesizing module 'pipeline_7' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/pipeline_7.v:11]
+INFO: [Synth 8-6155] done synthesizing module 'pipeline_7' (1#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/pipeline_7.v:11]
+INFO: [Synth 8-6155] done synthesizing module 'button_conditioner_2' (2#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/button_conditioner_2.v:13]
+INFO: [Synth 8-6157] synthesizing module 'edge_detector_3' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/edge_detector_3.v:12]
+INFO: [Synth 8-6155] done synthesizing module 'edge_detector_3' (3#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/edge_detector_3.v:12]
+INFO: [Synth 8-6157] synthesizing module 'reset_conditioner_1' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/reset_conditioner_1.v:11]
+INFO: [Synth 8-6155] done synthesizing module 'reset_conditioner_1' (4#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/reset_conditioner_1.v:11]
+INFO: [Synth 8-6157] synthesizing module 'multiSevenSegment_4' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiSevenSegment_4.v:12]
+INFO: [Synth 8-6157] synthesizing module 'counter_8' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/counter_8.v:14]
+INFO: [Synth 8-6155] done synthesizing module 'counter_8' (5#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/counter_8.v:14]
+INFO: [Synth 8-6157] synthesizing module 'sevenSegment_9' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/sevenSegment_9.v:7]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/sevenSegment_9.v:16]
+INFO: [Synth 8-6155] done synthesizing module 'sevenSegment_9' (6#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/sevenSegment_9.v:7]
+INFO: [Synth 8-6157] synthesizing module 'decoder_10' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/decoder_10.v:11]
+INFO: [Synth 8-6155] done synthesizing module 'decoder_10' (7#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/decoder_10.v:11]
+INFO: [Synth 8-6155] done synthesizing module 'multiSevenSegment_4' (8#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiSevenSegment_4.v:12]
+INFO: [Synth 8-6157] synthesizing module 'manualTester_5' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/manualTester_5.v:7]
+INFO: [Synth 8-6157] synthesizing module 'alu_11' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/alu_11.v:7]
+INFO: [Synth 8-6157] synthesizing module 'adder_13' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adder_13.v:7]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adder_13.v:24]
+INFO: [Synth 8-6155] done synthesizing module 'adder_13' (9#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adder_13.v:7]
+INFO: [Synth 8-6157] synthesizing module 'boolean_14' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/boolean_14.v:7]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/boolean_14.v:18]
+INFO: [Synth 8-6155] done synthesizing module 'boolean_14' (10#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/boolean_14.v:7]
+INFO: [Synth 8-6157] synthesizing module 'shifter_15' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifter_15.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'shifter_15' (11#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifter_15.v:7]
+INFO: [Synth 8-6157] synthesizing module 'compare_16' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compare_16.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'compare_16' (12#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compare_16.v:7]
+INFO: [Synth 8-6157] synthesizing module 'multiplier_17' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplier_17.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'multiplier_17' (13#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplier_17.v:7]
+INFO: [Synth 8-6157] synthesizing module 'minimum_18' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimum_18.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'minimum_18' (14#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimum_18.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'alu_11' (15#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/alu_11.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'manualTester_5' (16#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/manualTester_5.v:7]
+INFO: [Synth 8-6157] synthesizing module 'autoTester_6' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/autoTester_6.v:7]
+INFO: [Synth 8-6157] synthesizing module 'aluTester_12' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/aluTester_12.v:7]
+INFO: [Synth 8-6157] synthesizing module 'adderTester_19' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adderTester_19.v:7]
+INFO: [Synth 8-155] case statement is not full and has no default [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adderTester_19.v:67]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adderTester_19.v:329]
+INFO: [Synth 8-6155] done synthesizing module 'adderTester_19' (17#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adderTester_19.v:7]
+INFO: [Synth 8-6157] synthesizing module 'booleanTester_20' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/booleanTester_20.v:7]
+INFO: [Synth 8-155] case statement is not full and has no default [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/booleanTester_20.v:61]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/booleanTester_20.v:117]
+INFO: [Synth 8-6155] done synthesizing module 'booleanTester_20' (18#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/booleanTester_20.v:7]
+INFO: [Synth 8-6157] synthesizing module 'multiplierTester_21' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplierTester_21.v:7]
+INFO: [Synth 8-155] case statement is not full and has no default [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplierTester_21.v:58]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplierTester_21.v:145]
+INFO: [Synth 8-6155] done synthesizing module 'multiplierTester_21' (19#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplierTester_21.v:7]
+INFO: [Synth 8-6157] synthesizing module 'shifterTester_22' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifterTester_22.v:7]
+INFO: [Synth 8-155] case statement is not full and has no default [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifterTester_22.v:61]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifterTester_22.v:181]
+INFO: [Synth 8-6155] done synthesizing module 'shifterTester_22' (20#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifterTester_22.v:7]
+INFO: [Synth 8-6157] synthesizing module 'compareTester_23' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compareTester_23.v:7]
+INFO: [Synth 8-155] case statement is not full and has no default [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compareTester_23.v:90]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compareTester_23.v:411]
+INFO: [Synth 8-6155] done synthesizing module 'compareTester_23' (21#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compareTester_23.v:7]
+INFO: [Synth 8-6157] synthesizing module 'minimumTester_24' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimumTester_24.v:7]
+INFO: [Synth 8-155] case statement is not full and has no default [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimumTester_24.v:87]
+INFO: [Synth 8-226] default block is never used [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimumTester_24.v:397]
+INFO: [Synth 8-6155] done synthesizing module 'minimumTester_24' (22#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimumTester_24.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'aluTester_12' (23#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/aluTester_12.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'autoTester_6' (24#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/autoTester_6.v:7]
+INFO: [Synth 8-155] case statement is not full and has no default [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/au_top_0.v:121]
+INFO: [Synth 8-6155] done synthesizing module 'au_top_0' (25#1) [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/au_top_0.v:7]
+WARNING: [Synth 8-3917] design au_top_0 has port led[7] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[6] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[5] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[4] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[3] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[2] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[1] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[0] driven by constant 0
+WARNING: [Synth 8-7129] Port alufn[5] in module adder_13 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[4] in module adder_13 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[3] in module adder_13 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[2] in module adder_13 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[1] in module adder_13 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[5] in module minimum_18 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[4] in module minimum_18 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[3] in module minimum_18 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[0] in module minimum_18 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[15] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[14] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[13] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[12] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[11] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[10] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[9] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[8] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[7] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[6] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[5] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[4] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[3] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[2] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[1] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port x[0] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[15] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[14] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[13] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[12] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[11] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[10] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[9] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[8] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[7] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[6] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[5] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[4] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[3] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[2] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[1] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[0] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[5] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[4] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[3] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[0] in module compare_16 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[15] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[14] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[13] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[12] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[11] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[10] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[9] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[8] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[7] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[6] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[5] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port y[4] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[5] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[4] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[3] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[2] in module shifter_15 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[5] in module boolean_14 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[4] in module boolean_14 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[3] in module boolean_14 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port alufn[2] in module boolean_14 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[23] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[22] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[21] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[20] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[19] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[18] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[17] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[16] in module au_top_0 is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 1235.254 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:09 ; elapsed = 00:00:10 . Memory (MB): peak = 1235.254 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:09 ; elapsed = 00:00:10 . Memory (MB): peak = 1235.254 ; gain = 0.000
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.033 . Memory (MB): peak = 1235.254 ; gain = 0.000
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [D:/repos/CHAD-TO-DA-MOON/work/constraint/alchitry.xdc]
+Finished Parsing XDC File [D:/repos/CHAD-TO-DA-MOON/work/constraint/alchitry.xdc]
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [D:/repos/CHAD-TO-DA-MOON/work/constraint/alchitry.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/au_top_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/au_top_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Parsing XDC File [D:/repos/CHAD-TO-DA-MOON/work/constraint/io.xdc]
+Finished Parsing XDC File [D:/repos/CHAD-TO-DA-MOON/work/constraint/io.xdc]
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [D:/repos/CHAD-TO-DA-MOON/work/constraint/io.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/au_top_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/au_top_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Parsing XDC File [C:/Program Files/Alchitry/Alchitry Labs/library/components/au.xdc]
+Finished Parsing XDC File [C:/Program Files/Alchitry/Alchitry Labs/library/components/au.xdc]
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1249.961 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.011 . Memory (MB): peak = 1249.961 ; gain = 0.000
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1249.961 ; gain = 14.707
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a35tftg256-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1249.961 ; gain = 14.707
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1249.961 ; gain = 14.707
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'M_state_q_reg' in module 'manualTester_5'
+INFO: [Synth 8-802] inferred FSM for state register 'M_state_q_reg' in module 'adderTester_19'
+INFO: [Synth 8-802] inferred FSM for state register 'M_state_q_reg' in module 'booleanTester_20'
+INFO: [Synth 8-802] inferred FSM for state register 'M_state_q_reg' in module 'multiplierTester_21'
+INFO: [Synth 8-802] inferred FSM for state register 'M_state_q_reg' in module 'shifterTester_22'
+INFO: [Synth 8-802] inferred FSM for state register 'M_state_q_reg' in module 'compareTester_23'
+INFO: [Synth 8-802] inferred FSM for state register 'M_testAluFsm_q_reg' in module 'aluTester_12'
+INFO: [Synth 8-802] inferred FSM for state register 'M_tester_q_reg' in module 'au_top_0'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+              IDLE_state |                               00 |                               00
+            WAIT_A_state |                               01 |                               01
+            WAIT_B_state |                               10 |                               10
+              TEST_state |                               11 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'M_state_q_reg' using encoding 'sequential' in module 'manualTester_5'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+             SLEEP_state |                               00 |                               00
+              TEST_state |                               01 |                               01
+              PASS_state |                               10 |                               10
+              FAIL_state |                               11 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'M_state_q_reg' using encoding 'sequential' in module 'adderTester_19'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+             SLEEP_state |                               00 |                               00
+              TEST_state |                               01 |                               01
+              PASS_state |                               10 |                               10
+              FAIL_state |                               11 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'M_state_q_reg' using encoding 'sequential' in module 'booleanTester_20'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+             SLEEP_state |                             0001 |                               00
+              TEST_state |                             0010 |                               01
+              PASS_state |                             0100 |                               10
+              FAIL_state |                             1000 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'M_state_q_reg' using encoding 'one-hot' in module 'multiplierTester_21'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+             SLEEP_state |                               00 |                               00
+              TEST_state |                               01 |                               01
+              PASS_state |                               10 |                               10
+              FAIL_state |                               11 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'M_state_q_reg' using encoding 'sequential' in module 'shifterTester_22'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+             SLEEP_state |                               00 |                               00
+              TEST_state |                               01 |                               01
+              PASS_state |                               10 |                               10
+              FAIL_state |                               11 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'M_state_q_reg' using encoding 'sequential' in module 'compareTester_23'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+         IDLE_testAluFsm |                              000 |                              000
+        ADDER_testAluFsm |                              001 |                              001
+         MULT_testAluFsm |                              010 |                              110
+         BOOL_testAluFsm |                              011 |                              010
+      SHIFTER_testAluFsm |                              100 |                              011
+      COMPARE_testAluFsm |                              101 |                              100
+          MIN_testAluFsm |                              110 |                              101
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'M_testAluFsm_q_reg' using encoding 'sequential' in module 'aluTester_12'
+WARNING: [Synth 8-327] inferring latch for variable 'io_seg_reg' [D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/autoTester_6.v:42]
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+             IDLE_tester |                               00 |                               10
+             AUTO_tester |                               01 |                               00
+           MANUAL_tester |                               10 |                               01
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'M_tester_q_reg' using encoding 'sequential' in module 'au_top_0'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:21 ; elapsed = 00:00:23 . Memory (MB): peak = 1249.961 ; gain = 14.707
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   18 Bit       Adders := 1     
+	   3 Input   16 Bit       Adders := 4     
+	   2 Input    6 Bit       Adders := 1     
+	   2 Input    5 Bit       Adders := 1     
+	   2 Input    4 Bit       Adders := 4     
++---XORs : 
+	   2 Input     16 Bit         XORs := 2     
+	   2 Input      1 Bit         XORs := 4     
++---Registers : 
+	               18 Bit    Registers := 1     
+	               16 Bit    Registers := 2     
+	                6 Bit    Registers := 2     
+	                5 Bit    Registers := 1     
+	                4 Bit    Registers := 5     
+	                2 Bit    Registers := 6     
+	                1 Bit    Registers := 6     
++---Muxes : 
+	   3 Input   24 Bit        Muxes := 1     
+	   2 Input   18 Bit        Muxes := 1     
+	   2 Input   16 Bit        Muxes := 14    
+	   4 Input   16 Bit        Muxes := 22    
+	  16 Input   16 Bit        Muxes := 2     
+	   6 Input   16 Bit        Muxes := 2     
+	  11 Input   16 Bit        Muxes := 2     
+	  14 Input   16 Bit        Muxes := 1     
+	   3 Input   16 Bit        Muxes := 1     
+	   7 Input    8 Bit        Muxes := 1     
+	   3 Input    8 Bit        Muxes := 1     
+	   4 Input    6 Bit        Muxes := 4     
+	  35 Input    6 Bit        Muxes := 1     
+	  24 Input    6 Bit        Muxes := 1     
+	   2 Input    5 Bit        Muxes := 2     
+	   6 Input    5 Bit        Muxes := 1     
+	   4 Input    5 Bit        Muxes := 2     
+	  14 Input    5 Bit        Muxes := 1     
+	   4 Input    4 Bit        Muxes := 7     
+	  40 Input    4 Bit        Muxes := 1     
+	  14 Input    4 Bit        Muxes := 1     
+	   7 Input    4 Bit        Muxes := 1     
+	   3 Input    4 Bit        Muxes := 1     
+	  35 Input    3 Bit        Muxes := 1     
+	   7 Input    3 Bit        Muxes := 2     
+	   2 Input    3 Bit        Muxes := 6     
+	   4 Input    2 Bit        Muxes := 8     
+	   2 Input    2 Bit        Muxes := 23    
+	  97 Input    2 Bit        Muxes := 1     
+	  25 Input    2 Bit        Muxes := 1     
+	  49 Input    2 Bit        Muxes := 1     
+	 112 Input    2 Bit        Muxes := 1     
+	   7 Input    2 Bit        Muxes := 1     
+	   3 Input    2 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 84    
+	   4 Input    1 Bit        Muxes := 11    
+	   5 Input    1 Bit        Muxes := 9     
+	  16 Input    1 Bit        Muxes := 1     
+	   7 Input    1 Bit        Muxes := 1     
+	   3 Input    1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 90 (col length:60)
+BRAMs: 100 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+DSP Report: Generating DSP multiplierUnit/out0, operation Mode is: A*B.
+DSP Report: operator multiplierUnit/out0 is absorbed into DSP multiplierUnit/out0.
+DSP Report: Generating DSP manual_t/the_alu/multiplierUnit/out0, operation Mode is: A*B.
+DSP Report: operator manual_t/the_alu/multiplierUnit/out0 is absorbed into DSP manual_t/the_alu/multiplierUnit/out0.
+WARNING: [Synth 8-3917] design au_top_0 has port led[7] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[6] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[5] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[4] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[3] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[2] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[1] driven by constant 0
+WARNING: [Synth 8-3917] design au_top_0 has port led[0] driven by constant 0
+WARNING: [Synth 8-7129] Port io_dip[23] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[22] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[21] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[20] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[19] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[18] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[17] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port io_dip[16] in module au_top_0 is either unconnected or has no load
+WARNING: [Synth 8-3332] Sequential element (auto_t/io_seg_reg[7]) is unused and will be removed from module au_top_0.
+WARNING: [Synth 8-3332] Sequential element (auto_t/io_seg_reg[1]) is unused and will be removed from module au_top_0.
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:34 ; elapsed = 00:00:36 . Memory (MB): peak = 1249.961 ; gain = 14.707
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+ROM: Preliminary Mapping Report
++-----------------+---------------+---------------+----------------+
+|Module Name      | RTL Object    | Depth x Width | Implemented As | 
++-----------------+---------------+---------------+----------------+
+|compareTester_23 | M_adderUnit_y | 64x14         | LUT            | 
+|compareTester_23 | M_adderUnit_x | 64x13         | LUT            | 
+|minimumTester_24 | M_adderUnit_x | 32x11         | LUT            | 
+|minimumTester_24 | M_adderUnit_y | 32x13         | LUT            | 
+|compareTester_23 | M_adderUnit_x | 64x13         | LUT            | 
+|compareTester_23 | M_adderUnit_y | 64x14         | LUT            | 
+|minimumTester_24 | M_adderUnit_x | 32x11         | LUT            | 
+|minimumTester_24 | M_adderUnit_y | 32x13         | LUT            | 
++-----------------+---------------+---------------+----------------+
+
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++--------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name   | DSP Mapping | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++--------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|multiplier_17 | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|multiplier_17 | A*B         | 16     | 16     | -      | -      | 32     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++--------------+-------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:47 ; elapsed = 00:00:49 . Memory (MB): peak = 1249.961 ; gain = 14.707
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:57 ; elapsed = 00:00:59 . Memory (MB): peak = 1407.012 ; gain = 171.758
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:58 ; elapsed = 00:01:00 . Memory (MB): peak = 1417.051 ; gain = 181.797
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:01:04 ; elapsed = 00:01:07 . Memory (MB): peak = 1417.051 ; gain = 181.797
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:04 ; elapsed = 00:01:07 . Memory (MB): peak = 1417.051 ; gain = 181.797
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:04 ; elapsed = 00:01:07 . Memory (MB): peak = 1417.051 ; gain = 181.797
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:04 ; elapsed = 00:01:07 . Memory (MB): peak = 1417.051 ; gain = 181.797
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:05 ; elapsed = 00:01:07 . Memory (MB): peak = 1417.051 ; gain = 181.797
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:05 ; elapsed = 00:01:07 . Memory (MB): peak = 1417.051 ; gain = 181.797
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+--------+------+
+|      |Cell    |Count |
++------+--------+------+
+|1     |BUFG    |     1|
+|2     |CARRY4  |    41|
+|3     |DSP48E1 |     2|
+|4     |LUT1    |    22|
+|5     |LUT2    |    81|
+|6     |LUT3    |   136|
+|7     |LUT4    |    86|
+|8     |LUT5    |   149|
+|9     |LUT6    |   454|
+|10    |FDRE    |   196|
+|11    |FDSE    |     5|
+|12    |LD      |     2|
+|13    |IBUF    |    23|
+|14    |OBUF    |    45|
++------+--------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:05 ; elapsed = 00:01:07 . Memory (MB): peak = 1417.051 ; gain = 181.797
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 20 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:53 ; elapsed = 00:01:04 . Memory (MB): peak = 1417.051 ; gain = 167.090
+Synthesis Optimization Complete : Time (s): cpu = 00:01:05 ; elapsed = 00:01:07 . Memory (MB): peak = 1417.051 ; gain = 181.797
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.028 . Memory (MB): peak = 1417.051 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 45 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1417.051 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 2 instances were transformed.
+  LD => LDCE: 2 instances
+
+Synth Design complete, checksum: fb9740ee
+INFO: [Common 17-83] Releasing license: Synthesis
+98 Infos, 101 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:01:11 ; elapsed = 00:01:14 . Memory (MB): peak = 1417.051 ; gain = 181.797
+INFO: [Common 17-1381] The checkpoint 'D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.runs/synth_1/au_top_0.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file au_top_0_utilization_synth.rpt -pb au_top_0_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Mon Mar 28 15:32:57 2022...
