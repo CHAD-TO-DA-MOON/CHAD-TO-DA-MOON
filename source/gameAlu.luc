@@ -1,4 +1,4 @@
-module alu(
+module gameAlu(
     // x and y are 16-bit signed operands. ALUFN is a 6-bit input.
     // z, v, n are all 1-bit output signals. out is a 16-bit output.
     input x[16],
