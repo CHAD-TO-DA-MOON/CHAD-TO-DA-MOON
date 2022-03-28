@@ -21,6 +21,7 @@ module gameCU (
   // Add timer
   // Reduce states from branching (due to boostrapped reg48)
   // Add shooting
+  // bsel and c can be simplified into one control signal
   
   .clk(clk) {
   

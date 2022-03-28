@@ -1,0 +1,39 @@
+module gameBeta (
+    input clk,        // clock
+    input rst,        // reset
+    input buttons[3], // button input, 0-2 left to right
+    output debug[16]
+  ) {
+  
+  gameAlu alu;
+  sig aluB[16];
+  
+  .clk(clk) {
+    .rst(rst) {
+      gameCU cu;
+    }
+  }
+
+  always {
+    // CU - bootstrap branching reg to CU
+    cu.buttons = buttons;    
+    cu.reg48 = 0; // placeholder for reg[0x48]
+    
+    // REGFILE
+    
+    // ALU
+    case(cu.bsel) {
+      0: aluB = 16b0; // placeholder for rdb
+      1: aluB = cu.c;
+      default:
+        aluB = 16b0;
+    }
+    
+    alu.x = 16b0; // placeholder for rda
+    alu.y = aluB;
+    alu.alufn = cu.alufn;
+    
+    // DEBUG
+    debug = 16b0;
+  }
+}

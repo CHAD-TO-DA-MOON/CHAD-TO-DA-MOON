@@ -18,19 +18,12 @@ module au_top (
     reset_conditioner reset_cond;
     button_conditioner button_cond[5];
     edge_detector buttondetector[5](#RISE(1), #FALL(0));
+    
     .rst(rst) {
-      
       multiSevenSegment multiSeg;
-      
-      manualTester manual_t;
-      autoTester auto_t;
-      
-      
+      gameBeta beta;
     }
   }
-  
-  fsm tester(.clk(clk), .rst(rst), #INIT(IDLE)) = {AUTO, MANUAL,IDLE};
-  
   
   always {
     reset_cond.in = ~rst_n; // input raw inverted reset signal
@@ -45,62 +38,17 @@ module au_top (
     io_sel = 4hf;           // select no digits
     
     
-    button_cond.in = io_button;
-    buttondetector.in = button_cond.out;
+    button_cond.in = io_button; // reduce bouncing
+    buttondetector.in = button_cond.out; // get edge of button press
     
     // connect manual input
-    manual_t.proceed = buttondetector.out[2]; // button to enter the next state (A,B,ALUFN)
-    manual_t.data[7:0] = io_dip[0];
-    manual_t.data[15:8] = io_dip[1];
-    
-    
-    // connect auto input
-    auto_t.proceed = buttondetector.out[2];
-    
+    beta.buttons[0] = buttondetector.out[3]; // left
+    beta.buttons[1] = buttondetector.out[2]; // center
+    beta.buttons[2] = buttondetector.out[4]; // right
     
     // 7segment
     multiSeg.values = $build(16hFFFF,4);
     io_seg = ~multiSeg.seg;
     io_sel = ~multiSeg.sel;
-    
-    // Button to change from Manual to Auto tester
-    case (tester.q){
-      
-      tester.IDLE:
-        multiSeg.values = {4b0000, 4b0000, 4b0000, 4b0000};
-        io_seg = ~multiSeg.seg;
-        io_sel = ~multiSeg.sel;
-        if (buttondetector.out[3]) {  // left button
-          tester.d = tester.MANUAL;
-        }
-        if (buttondetector.out[4]) {  // right button
-          tester.d = tester.AUTO;
-        }
-      
-      tester.AUTO:
-        io_led = auto_t.io_led;
-        io_seg = auto_t.io_seg;
-        io_sel = auto_t.io_sel;
-        if (buttondetector.out[1]) {  // press the down button to toggle tester
-          tester.d = tester.IDLE;
-        }
-      
-      tester.MANUAL:
-        
-        // LED
-        io_led[2][2:0] = manual_t.zvn;
-        io_led[1] = manual_t.ledout[15:8];
-        io_led[0] = manual_t.ledout[7:0];
-        io_seg = ~multiSeg.seg;
-        io_sel = ~multiSeg.sel;
-        multiSeg.values = $build(manual_t.out, 4);
-        
-        
-        if (buttondetector.out[1]) {  // press down button to toggle tester
-          tester.d = tester.IDLE;
-        }
-      
-      
-    }
   }
 }
