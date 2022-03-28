@@ -1,0 +1,21 @@
+module shifter(
+    // x and y are 16-bit signed operands. ALUFN is a 6-bit input.
+    // This unit generates a 16-bit output (by implementing SRA, SHR and SHL instructions).
+    input x[16],
+    input y[16], // only the lower-order 5 bits B[4:0] are used as the shift count
+    input alufn[6],
+    output out[16]
+){
+	always{
+	    // ALUFN[1:0] are used to control the shifter unit.
+	    // ALUFN[1:0] == 00 -> SHL
+	    // ALUFN[1:0] == 01 -> SHR
+	    // ALUFN[1:0] == 10 -> SRA
+	    case (alufn[1:0]) {
+	        b00: out = x << y[3:0];
+	        b01: out = x >> y[3:0];
+	        b10: out = $signed(x) >>> y[3:0];     // $signed() forces x to be interpreted as signed
+	        default: out = x;
+	    }
+	}
+}

@@ -1,0 +1,126 @@
+module multiplierTester (
+    input clk, 
+    input rst,
+    input start,      // Press the "start" button to begin the unit tester. Start = 1 -> Tester wakes up; Start = 0 -> Tester is sleeping.
+    input error,      // 1 -> tester in error mode; 0 -> tester in normal mode
+    output state_indicator[4],
+    output counter_indicator[8],
+    output indicator[2]    // Success = 1 -> Pass the tester. Success = 0 -> Fail the tester.
+) {
+	dff counter[4](#INIT(0), .clk(clk), .rst(rst));
+	fsm state(.clk(clk), .rst(rst)) = {SLEEP, TEST, PASS, FAIL};
+	multiplier multiplierUnit;
+
+	always{
+        indicator = b10;   // 10: pending; 11: pass all the tests; 01: fail the tester
+        multiplierUnit.x = b0000000000000000;
+        multiplierUnit.y = b0000000000000000;
+        
+        if (start == 0) {
+            state.d = state.SLEEP;
+            counter.d = 0;
+        }
+        
+        case (state.q){
+            state.SLEEP:
+                if (start == 1) {state.d = state.TEST;}
+
+            state.TEST:
+                case (counter.q){
+                    b0001:
+                        // MUL operation test: 0 * 0
+                        // 0 * 0 = 0
+                        multiplierUnit.x = 16h0000;
+                        multiplierUnit.y = 16h0000;
+                        if (error == 1) {if (~multiplierUnit.out != 16h0000) {state.d = state.FAIL;}}
+                        else{if (multiplierUnit.out != 16h0000) {state.d = state.FAIL;}} 
+         
+ 
+         
+
+                    b0010: 
+                        // MUL operation test: pos * pos with overflow
+                        // 32767 * 32767 = 1073676289
+                        multiplierUnit.x = 16h7FFF;
+                        multiplierUnit.y = 16h7FFF;
+                        if (multiplierUnit.out != 16h0001) {state.d = state.FAIL;} 
+                    
+
+                    b0011: 
+                        // MUL operation test: pos * neg with overflow
+                        // 32767 * -32767 = -1073676289
+                        multiplierUnit.x = 16h7FFF;
+                        multiplierUnit.y = 16h8001;
+                        if (multiplierUnit.out != 16hFFFF) {state.d = state.FAIL;} 
+                    
+
+                    b0100: 
+                        // MUL operation test: neg * neg with overflow
+                        // -32767 * -32767 = 1073676289
+                        multiplierUnit.x = 16h8001;
+                        multiplierUnit.y = 16h8001;
+                        if (multiplierUnit.out != 16h0001) {state.d = state.FAIL;} 
+                    
+
+                    b0101:
+                        // MUL operation test: 0 * pos
+                        multiplierUnit.x = 16h0;
+                        multiplierUnit.y = 16h7FFF;
+                        if (multiplierUnit.out != 16h0) {state.d = state.FAIL;} 
+                    
+
+                    b0110:
+                        // MUL operation test: 0 * neg 
+                        multiplierUnit.x = 16h0;
+                        multiplierUnit.y = 16h8001;
+                        if (multiplierUnit.out != 16h0) {state.d = state.FAIL;} 
+                    
+
+                    b0111: 
+                        // MUL operation test: pos * pos without overflow
+                        // 3 * 7 = 21
+                        multiplierUnit.x = 16h0003;
+                        multiplierUnit.y = 16h0007;
+                        if (multiplierUnit.out != 16h0015) {state.d = state.FAIL;} 
+                    
+
+                    b1000: 
+                        // MUL operation test: pos * neg without overflow 
+                        // 3 * -7 = -21                    
+                        multiplierUnit.x = 16h0003;
+                        multiplierUnit.y = 16hFFF9;
+                        if (multiplierUnit.out != 16hFFEB) {state.d = state.FAIL;} 
+                    
+
+                    b1001: 
+                        // MUL operation test: neg * neg without overflow
+                        // -3 * -7 = 21
+                        multiplierUnit.x = 16hFFFD;
+                        multiplierUnit.y = 16hFFF9;
+                        if (multiplierUnit.out != 16h0015) {state.d = state.FAIL;} 
+             
+
+                    b1010: 
+                        state.d = state.PASS;
+
+                }
+
+            state.PASS:
+                indicator = b11;
+
+            state.FAIL:
+                indicator = b01;
+        }
+        if(state.q == state.TEST) {
+          counter.d = counter.q + 1;
+        }
+        counter_indicator = counter.q;
+        case (state.q) {
+          state.SLEEP: state_indicator=b0001;
+          state.TEST:  state_indicator=b0010;
+          state.PASS:  state_indicator=b0100;
+          state.FAIL:  state_indicator=b1000;
+          default: state_indicator=b1111;
+        }
+	}
+}

@@ -1,0 +1,29 @@
+module minimum(
+    // x and y are 16-bit signed operands; z, v, n are all 1-bit input signals; ALUFN is a 6-bit input
+    // This unit generates a 16-bit output which is 0 or 1.
+    input v,
+    input n,
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output out[16]
+){
+    always{
+        out = b0000000000000000;
+	       // ALUFN[2:1] are used to control the minimum unit.
+        // ALUFN[2:1] == 00 -> min
+        // ALUFN[2:1] == 01 -> max
+	                
+        case (alufn[2:1]) {
+            b00:  
+                if (n ^ v ==  1) {out = x;}
+                else {out = y;}
+            
+            b01: 
+                if (n ^ v ==  1) {out = y;}
+                else {out = x;}
+            
+            default: out = b0000000000000000;
+        }
+    }
+}

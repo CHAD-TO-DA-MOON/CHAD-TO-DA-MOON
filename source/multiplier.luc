@@ -1,0 +1,11 @@
+module multiplier(
+    // x and y are 16-bit signed operands.
+    // This unit generates a 16-bit output (the lower-order 16 bits of the multiplication of x and y).
+    input x[16],
+    input y[16],
+    output out[16]
+){
+	always{
+    out = x * y;
+	}
+}

@@ -1,0 +1,27 @@
+module compare(
+    // x and y are 16-bit signed operands. ALUFN is a 6-bit input.
+    // z, v, n are all 1-bit output signals. out is a 16-bit output.
+    input z,
+    input v,
+    input n,
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output out[16]
+){
+	always{
+	    out = b0000000000000000;
+	    // ALUFN[2:1] are used to control the compare unit.
+	    // ALUFN[2:1] == 00 -> x = y
+	    // ALUFN[2:1] == 01 -> x < y
+	    // ALUFN[2:1] == 10 -> x <= y
+            
+            
+            case (alufn[2:1]) {
+	        b00: out[0] = z;
+                b01: out[0] = n ^ v;	
+                b10: out[0] = z || (n ^ v);
+                default: out[0] = 0;
+            }
+	}
+}

@@ -1,0 +1,82 @@
+module alu(
+    // x and y are 16-bit signed operands. ALUFN is a 6-bit input.
+    // z, v, n are all 1-bit output signals. out is a 16-bit output.
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output out[16],
+    output z,
+    output v, 
+    output n
+){
+    // Define the modules to be used: adder, boolean, shifter, compare, multiplier
+    adder adderUnit;
+    boolean booleanUnit;
+    shifter shifterUnit;
+    compare compareUnit;
+    multiplier multiplierUnit;
+    minimum minimumUnit;
+
+    // Three temp variables for the output signals so that it can be read to complete the comparing function.
+    sig z_copy;
+    sig v_copy;
+    sig n_copy;
+
+    always{
+	
+	    // Feed the inputs to each unit and supply the output with the output of each unit
+        adderUnit.alufn = alufn;
+        adderUnit.x = x;
+        adderUnit.y = y;
+
+        z = adderUnit.z;
+        v = adderUnit.v;
+        n = adderUnit.n;
+
+        z_copy = adderUnit.z;
+        v_copy = adderUnit.v;
+        n_copy = adderUnit.n;
+
+        compareUnit.alufn = alufn;
+        compareUnit.x = x;
+        compareUnit.y = y;
+        compareUnit.z = z_copy;
+        compareUnit.v = v_copy;
+        compareUnit.n = n_copy;
+
+        booleanUnit.alufn = alufn;
+        booleanUnit.x = x;
+        booleanUnit.y = y;
+
+        shifterUnit.alufn = alufn;
+        shifterUnit.x = x;
+        shifterUnit.y = y;
+
+        multiplierUnit.x = x;
+        multiplierUnit.y = y;
+        
+        minimumUnit.alufn = alufn;
+        minimumUnit.v = v_copy;
+        minimumUnit.n = n_copy;
+        minimumUnit.x = x;
+        minimumUnit.y = y;
+
+        // ALUFN[5:3] are used to select which unit will supply the value for the ALU output.
+	    // ALUFN[5:3] == 000 -> adder (ALUFN[1] == 0) / multiplier (ALUFN[1] == 1)
+	    // ALUFN[5:3] == 001 -> multiplier
+	    // ALUFN[5:3] == 010 -> boolean
+	    // ALUFN[5:3] == 011 -> shifter
+            // ALUFN[5:3] == 100 -> compare
+	    // ALUFN[5:3] == 101 -> minimum
+        case (alufn[5:3]) {
+            b000: out = adderUnit.out;
+            b001: out = multiplierUnit.out;
+            b010: out = booleanUnit.out;
+            b011: out = shifterUnit.out;
+            b100: out = compareUnit.out;
+            b101: out = minimumUnit.out;
+            default: out = b0000000000000000;
+        }
+
+    }
+}

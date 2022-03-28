@@ -1,0 +1,23 @@
+module boolean(
+    // x and y are 16-bit signed operands. ALUFN is a 6-bit input.
+    // This unit generates a 16-bit output (i.e.out[i] = x[i] && y[i]).
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output out[16]
+){
+	always{
+	    // ALUFN[1:0] are used to control the boolean unit.
+	    // ALUFN[1:0] == 00 -> x & y
+	    // ALUFN[1:0] == 01 -> x | y
+	    // ALUFN[1:0] == 10 -> x ^ y
+	    // ALUFN[1:0] == 11 -> x
+	    case (alufn[1:0]) {
+	        b00: out = x & y;
+	        b01: out = x | y;
+	        b10: out = x ^ y;
+	        b11: out = x;
+	        default: out = b0000000000000000;
+	    }
+	}
+}

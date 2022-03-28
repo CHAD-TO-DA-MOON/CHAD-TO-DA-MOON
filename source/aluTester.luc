@@ -1,0 +1,91 @@
+module aluTester (
+    input clk,  // clock
+    input rst,
+    input proceed,
+    output out[3], // alufn signals
+    output indicator[2],
+    output counter_indicator[8],
+    output state_indicator[4]
+  ) {
+  
+  .clk(clk){
+    fsm testAluFsm={IDLE, ADDER, BOOL, SHIFTER, COMPARE, MIN, MULT}; 
+  }
+  
+  .clk(clk), .rst(rst){
+      dff run_test(#INIT(0));
+     .start(run_test.q), .error(1){
+      adderTester adderFSM;
+      booleanTester booleanFSM;
+      multiplierTester multiplierFSM;
+      shifterTester shifterFSM;
+      compareTester compareFSM;
+      minimumTester minFSM;
+    }
+  }
+  
+  always {
+    
+  
+    if (rst & 1){
+        testAluFsm.d = testAluFsm.IDLE;
+    }
+    else{
+        testAluFsm.d = testAluFsm.q;
+    }
+    out = 3b0;
+    indicator = 2b10;
+    counter_indicator = 0;
+    state_indicator = 0;
+    case(testAluFsm.q){
+      testAluFsm.IDLE:
+              if (proceed == 1) {
+                testAluFsm.d = testAluFsm.ADDER;
+                run_test.d = 1;
+              } else {
+                run_test.d = 0;
+              }  
+      testAluFsm.ADDER : 
+              out = 3b000;
+              indicator = adderFSM.indicator;
+              state_indicator = adderFSM.state_indicator;
+              counter_indicator = adderFSM.counter_indicator;
+              if (proceed == 1) {testAluFsm.d = testAluFsm.MULT;}
+      testAluFsm.MULT : 
+              out = 3b001;
+              indicator = multiplierFSM.indicator;
+              state_indicator = multiplierFSM.state_indicator;
+              counter_indicator = multiplierFSM.counter_indicator;
+               if (proceed == 1) {testAluFsm.d = testAluFsm.BOOL;}     
+      testAluFsm.BOOL : 
+              out = 3b010;
+              indicator = booleanFSM.indicator;
+              state_indicator = booleanFSM.state_indicator;
+              counter_indicator = booleanFSM.counter_indicator;
+               if (proceed == 1) {testAluFsm.d = testAluFsm.SHIFTER;}     
+      testAluFsm.SHIFTER : 
+              out = 3b011;
+              indicator = shifterFSM.indicator;
+              state_indicator = shifterFSM.state_indicator;
+              counter_indicator = shifterFSM.counter_indicator;
+               if (proceed == 1) {testAluFsm.d = testAluFsm.COMPARE;}        
+      testAluFsm.COMPARE : 
+              out = 3b100;
+              indicator =  compareFSM.indicator;
+              state_indicator = compareFSM.state_indicator;
+              counter_indicator = compareFSM.counter_indicator;
+               if (proceed == 1) {testAluFsm.d = testAluFsm.MIN;}
+      testAluFsm.MIN : 
+              out = 3b101;
+              indicator = minFSM.indicator;
+              state_indicator = minFSM.state_indicator;
+              counter_indicator = minFSM.counter_indicator;
+               if (proceed == 1) {testAluFsm.d = testAluFsm.IDLE;}        
+      
+      default:
+              out = 3b000;
+              testAluFsm.d = testAluFsm.ADDER;      
+                          
+    }
+  }
+}

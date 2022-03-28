@@ -1,0 +1,34 @@
+module adder(
+    // x and y are 16-bit signed operands. ALUFN is a 6-bit input.
+    // z, v, n are all 1-bit output signals.
+    input x[16],
+    input y[16],
+    input alufn[6],
+    output out[16],
+    output z,
+    output v,
+    output n
+){
+    // out_copy is a temp variable for the output so that it can be read to generate other signals.
+    sig out_copy[16];
+
+	always{
+	    out_copy = b0000000000000000;
+
+	    // If ALUFN[0] is 1, the operation is a SUBTRACT. Else the operation is an ADD.
+      case(alufn[0]){
+        1: out_copy = x - y;
+        0: out_copy = x + y;
+        default: out_copy = b0000000000000000;
+      }
+
+	    out = out_copy;
+	    // z is true when the outputs are all zero
+	    z = (out_copy == b0000000000000000);
+	    // v is true when the output overflows
+	    if (alufn[0] == 0) {v = ((x[15] == y[15]) && (x[15] != out_copy[15]));}
+	    else {v = ((x[15] != y[15]) && (x[15] != out_copy[15]));}
+	    // n is true when the output is negative (i.e., out[15] = 1)
+	    n = out_copy[15];
+	}
+}

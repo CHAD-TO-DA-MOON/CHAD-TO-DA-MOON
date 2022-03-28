@@ -1,0 +1,352 @@
+module minimumTester (
+    input clk, 
+    input rst,
+    input start,      // Press the "start" button to begin the unit tester. Start = 1 -> Tester wakes up; Start = 0 -> Tester is sleeping.
+    input error,
+    output indicator[2],    // Success = 1 -> Pass the tester. Success = 0 -> Fail the tester.
+    output state_indicator[4],
+    output counter_indicator[8]
+) {
+    dff counter[5](#INIT(0), .clk(clk), .rst(rst));
+    fsm state(.clk(clk), .rst(rst)) = {SLEEP, TEST, PASS, FAIL};
+    minimum minimumUnit;
+    adder adderUnit;
+
+    always{
+        indicator = b10;   // 10: pending; 11: pass all the tests; 01: fail the tester
+        adderUnit.x = b0000000000000000;
+        adderUnit.y = b0000000000000000;
+        minimumUnit.x = b0000000000000000;
+        minimumUnit.y = b0000000000000000;
+        adderUnit.alufn = b000000;
+        minimumUnit.alufn = 6b000000;
+        minimumUnit.v = adderUnit.v;
+        minimumUnit.n = adderUnit.n;
+
+        if (start == 0){
+            state.d = state.SLEEP;
+            counter.d = 0;
+        }
+        
+        case (state.q){
+            state.SLEEP:
+                if (start == 1) {state.d = state.TEST;}
+
+            state.TEST:
+                case (counter.q){
+                    b00001: 
+                        // MIN operation: 0 = 0
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16b0;
+                        adderUnit.y = 16b0;
+                        minimumUnit.x = 16b0;
+                        minimumUnit.y = 16b0;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (error == 1) {if (~minimumUnit.out != 16b0) {state.d = state.FAIL;}}
+                        else{if (minimumUnit.out != 16b0) {state.d = state.FAIL;}} 
+                    
+
+                    b00010: 
+                        // MIN operation: pos = pos
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16h0222;
+                        adderUnit.y = 16h0222;
+                        minimumUnit.x = 16h0222;
+                        minimumUnit.y = 16h0222;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h0222) {state.d = state.FAIL;} 
+                    
+
+                    b00011: 
+                        // MIN operation: neg = neg
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16hF111;
+                        adderUnit.y = 16hF111;
+                        minimumUnit.x = 16hF111;
+                        minimumUnit.y = 16hF111;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hF111) {state.d = state.FAIL;} 
+                    
+
+                    b00100: 
+                        // MIN operation: pos < pos without overflow
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16h001;
+                        adderUnit.y = 16h003;
+                        minimumUnit.x = 16h001;
+                        minimumUnit.y = 16h003;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h001) {state.d = state.FAIL;}  
+                    
+
+                    b00101: 
+                        // MIN: neg < pos without overflow
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16hFFF9;
+                        adderUnit.y = 16h0001;
+                        minimumUnit.x = 16hFFF9;
+                        minimumUnit.y = 16h0001;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hFFF9) {state.d = state.FAIL;}
+                    
+
+                    b00110: 
+                        // MIN: neg < pos with overflow
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16hF001;
+                        adderUnit.y = 16h7FFF;
+                        minimumUnit.x = 16hF001;
+                        minimumUnit.y = 16h7FFF;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hF001) {state.d = state.FAIL;}
+                     
+
+                    b00111: 
+                        // MIN: neg < neg without overflow
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16hFFFD;
+                        adderUnit.y = 16hFFFE;
+                        minimumUnit.x = 16hFFFD;
+                        minimumUnit.y = 16hFFFE;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hFFFD) {state.d = state.FAIL;}
+                    
+
+                    b01000: 
+                        // MIN: pos > pos without overflow
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16h0010;
+                        adderUnit.y = 16h0008;
+                        minimumUnit.x = 16h0010;
+                        minimumUnit.y = 16h0008;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h0008) {state.d = state.FAIL;}
+                     
+
+                    b01001: 
+                        // MIN: pos > neg without overflow
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16h0003;
+                        adderUnit.y = 16hFFFF;
+                        minimumUnit.x = 16h0003;
+                        minimumUnit.y = 16hFFFF;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hFFFF) {state.d = state.FAIL;}
+                     
+
+                    b01010: 
+                        // MIN: pos > neg with overflow
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16h7FFF;
+                        adderUnit.y = 16hFFFF;
+                        minimumUnit.x = 16h7FFF;
+                        minimumUnit.y = 16hFFFF;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hFFFF) {state.d = state.FAIL;}
+                    
+
+                     b01011: 
+                        // MIN: neg > neg without overflow
+                        minimumUnit.alufn = b101001;  
+                        adderUnit.alufn = b101001; 
+                        adderUnit.x = 16hFCFE;
+                        adderUnit.y = 16hFCFD;
+                        minimumUnit.x = 16hFCFE;
+                        minimumUnit.y = 16hFCFD;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hFCFD) {state.d = state.FAIL;}
+                    
+
+
+
+
+                    b01100: 
+                        // MAX: 0 == 0
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16h0000;
+                        adderUnit.y = 16h0000;
+                        minimumUnit.x = 16h0000;
+                        minimumUnit.y = 16h0000;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h0000) {state.d = state.FAIL;} 
+                     
+
+                    b01101: 
+                        // MAX: pos == pos
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16h0200;
+                        adderUnit.y = 16h0200;
+                        minimumUnit.x = 16h0200;
+                        minimumUnit.y = 16h0200;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h0200) {state.d = state.FAIL;} 
+                    
+
+                    b01110: 
+                        // MAX: neg == neg
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16hF111;
+                        adderUnit.y = 16hF111;
+                        minimumUnit.x = 16hF111;
+                        minimumUnit.y = 16hF111;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hF111) {state.d = state.FAIL;} 
+                     
+
+                    b01111: 
+                        // MAX: pos < pos without overflow
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16h0120;
+                        adderUnit.y = 16h0180;
+                        minimumUnit.x = 16h0120;
+                        minimumUnit.y = 16h0180;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h0180) {state.d = state.FAIL;}   
+                     
+
+                    b10000: 
+                        // MAX: neg < pos without overflow
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16hFFF9;
+                        adderUnit.y = 16h0010;
+                        minimumUnit.x = 16hFFF9;
+                        minimumUnit.y = 16h0010;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h0010) {state.d = state.FAIL;}
+                     
+
+                    b10001: 
+                        // MAX: neg < pos with overflow
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16hF000;
+                        adderUnit.y = 16h7FFF;
+                        minimumUnit.x = 16hF000;
+                        minimumUnit.y = 16h7FFF;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h7FFF) {state.d = state.FAIL;}
+                    
+
+                    b10010: 
+                        // MAX: neg < neg without overflow
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16hF001;
+                        adderUnit.y = 16hFEEE;
+                        minimumUnit.x = 16hF001;
+                        minimumUnit.y = 16hFEEE;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hFEEE) {state.d = state.FAIL;}
+                     
+
+                    b10011: 
+                        // MAX: pos > pos without overflow
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16h0888;
+                        adderUnit.y = 16h0666;
+                        minimumUnit.x = 16h0888;
+                        minimumUnit.y = 16h0666;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h0888) {state.d = state.FAIL;}
+                    
+
+                    b10100: 
+                        // MAX: pos > neg without overflow
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16h0011;
+                        adderUnit.y = 16hFFFF;
+                        minimumUnit.x = 16h0011;
+                        minimumUnit.y = 16hFFFF;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h0011) {state.d = state.FAIL;}
+                     
+
+                    b10101: 
+                        // MAX: pos > neg with overflow
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16h7FFF;
+                        adderUnit.y = 16hFF99;
+                        minimumUnit.x = 16h7FFF;
+                        minimumUnit.y = 16hFF99;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16h7FFF) {state.d = state.FAIL;}
+                    
+
+                    b10110: 
+                        // MAX: neg > neg without overflow
+                        minimumUnit.alufn = b101011;  
+                        adderUnit.alufn = b101011; 
+                        adderUnit.x = 16hFCCC;
+                        adderUnit.y = 16hFBBB;
+                        minimumUnit.x = 16hFCCC;
+                        minimumUnit.y = 16hFBBB;
+                        minimumUnit.v = adderUnit.v;
+                        minimumUnit.n = adderUnit.n;
+                        if (minimumUnit.out != 16hFCCC) {state.d = state.FAIL;}
+                    
+
+
+                    b10111: 
+                        state.d = state.PASS;
+
+                }
+
+            state.PASS:
+                indicator = b11;
+
+            state.FAIL:
+                indicator = b01;
+        }
+        if (state.q == state.TEST){
+            counter.d = counter.q + 1;
+        } 
+        counter_indicator = counter.q;
+        case (state.q) {
+            state.SLEEP: state_indicator=b0001;
+            state.TEST:  state_indicator=b0010;
+            state.PASS:  state_indicator=b0100;
+            state.FAIL:  state_indicator=b1000;
+            default: state_indicator=b1111;
+        }
+
+    }
+}
