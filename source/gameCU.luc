@@ -360,7 +360,7 @@ module gameCU (
       /// ***** UPDATE LIVES ***** ///
 
       gameState.DECREMENT_PLAYER_LIFE: //TODO : Connect with Sanat's state
-        // SUB : Decrement player life by 1
+        // SUB : Decrement player life by bomb counter
         alufn = b000001; bsel = 0; c = 0; 
         ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
         debug = 16b0; //TODO : can be changed next time
