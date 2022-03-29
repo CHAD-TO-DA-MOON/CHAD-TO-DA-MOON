@@ -364,14 +364,14 @@ module gameCU (
       /// ***** UPDATE LIVES ***** ///
       gameState.UPDATE_LIVES:
         // SUB : Decrement player life by bomb counter
-        alufn = b000001; bsel = 0; c = 0; 
+        alufn = b000001; bsel = 0; c = 0;  // SUB
         ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
         debug = 16b0; //TODO : can be changed next time
 
         gameState.d = gameState.CHECK_PLAYER_LIVES;
             
       gameState.CHECK_PLAYER_LIVES:
-        alufn = 1100101; bsel = 0; c = 0; 
+        alufn = 1100011; bsel = 0; c = 0;  // CMPLT
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
 
       gameState.ALIVE_BRANCH:
