@@ -46,6 +46,7 @@ module gameCU (
       
       SHOOT, // check ammo, shoot, remove bomb, decrement ammo
       
+      RESET_BOMBS,
       COUNT_BOMBS, // calculate bombs
       CHECK_POSITION_BOMB_0,
       CHECK_POSITION_BOMB_1,
@@ -167,7 +168,7 @@ module gameCU (
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
         debug = 16b0;
         
-        gameState.d = gameState.COUNT_BOMBS;
+        gameState.d = gameState.RESET_BOMBS;
       
       gameState.RIGHT_CHECK:
         // CMPLEC: player pos < 7
@@ -191,13 +192,18 @@ module gameCU (
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
         debug = 16b0;
         
-        gameState.d = gameState.COUNT_BOMBS;
+        gameState.d = gameState.RESET_BOMBS;
       
       gameState.SHOOT:
-        gameState.d = gameState.COUNT_BOMBS;
+        gameState.d = gameState.RESET_BOMBS;
       
         
         /// ***** COUNT BOMBS ***** ///
+        
+      gameState.RESET_BOMBS:
+        alufn = b010011; bsel = 1; c = 0;
+        ra = 8h50; rb = 8h00; rc = 8h48; we = 1; sr = 0;
+        gameState.d = gameState.COUNT_BOMBS;
         
         
       gameState.COUNT_BOMBS:
