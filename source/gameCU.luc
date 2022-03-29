@@ -40,6 +40,22 @@ module gameCU (
       SHOOT, // check ammo, shoot, remove bomb, decrement ammo
       
       COUNT_BOMBS, // calculate bombs
+      CHECK_POSITION_BOMB_0,
+      CHECK_POSITION_BOMB_1,
+      CHECK_POSITION_BOMB_2,
+      CHECK_POSITION_BOMB_3,
+      CHECK_POSITION_BOMB_4,
+      CHECK_POSITION_BOMB_5,
+      CHECK_POSITION_BOMB_6,
+      CHECK_POSITION_BOMB_7,
+      INCREMENT_BOMB_0,
+      INCREMENT_BOMB_1,
+      INCREMENT_BOMB_2,
+      INCREMENT_BOMB_3,
+      INCREMENT_BOMB_4,
+      INCREMENT_BOMB_5,
+      INCREMENT_BOMB_6,
+      INCREMENT_BOMB_7,      
       UPDATE_LIVES,
       UPDATE_BOARD,
       WIN, LOSE,
@@ -136,15 +152,179 @@ module gameCU (
       gameState.SHOOT:
         gameState.d = gameState.COUNT_BOMBS;
       
-      gameState.COUNT_BOMBS:
-        gameState.d = gameState.UPDATE_LIVES;
         
+        /// ***** COUNT BOMBS ***** ///
+        
+        
+      gameState.COUNT_BOMBS:
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        gameState.d = gameState.CHECK_POSITION_BOMB_0;        
+       
+     
+        /// ********* 0 ********** ///
+          
+      gameState.CHECK_POSITION_BOMB_0:               
+        if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_0;
+        } else {
+          gameState.d = gameState.CHECK_POSITION_BOMB_1;
+        }
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        
+          
+      gameState.INCREMENT_BOMB_0:
+        alufn = b110000; bsel = 1; c = 1;
+        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        gameState.d = gameState.CHECK_POSITION_BOMB_1;
+      
+        
+        
+        /// ********* 1 ********** ///
+          
+      gameState.CHECK_POSITION_BOMB_1:               
+        if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_1;
+        } else {
+          gameState.d = gameState.CHECK_POSITION_BOMB_2;
+        }
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        
+          
+      gameState.INCREMENT_BOMB_1:
+        alufn = b110000; bsel = 1; c = 1;
+        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        gameState.d = gameState.CHECK_POSITION_BOMB_2;
+        
+        
+        
+       /// ********* 2 ********** ///
+          
+      gameState.CHECK_POSITION_BOMB_2:               
+        if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_2;
+        } else {
+          gameState.d = gameState.CHECK_POSITION_BOMB_3;
+        }
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        
+          
+      gameState.INCREMENT_BOMB_2:
+        alufn = b110000; bsel = 1; c = 1;
+        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        gameState.d = gameState.CHECK_POSITION_BOMB_3;
+        
+        
+        
+      /// ********* 3 ********** ///
+          
+      gameState.CHECK_POSITION_BOMB_3:               
+        if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_3;
+        } else {
+          gameState.d = gameState.CHECK_POSITION_BOMB_4;
+        }
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        
+          
+      gameState.INCREMENT_BOMB_3:
+        alufn = b110000; bsel = 1; c = 1;
+        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        gameState.d = gameState.CHECK_POSITION_BOMB_4;
+        
+        
+        
+        /// ********* 4 ********** ///
+          
+      gameState.CHECK_POSITION_BOMB_4:               
+        if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_4;
+        } else {
+          gameState.d = gameState.CHECK_POSITION_BOMB_5;
+        }
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        
+          
+      gameState.INCREMENT_BOMB_4:
+        alufn = b110000; bsel = 1; c = 1;
+        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        gameState.d = gameState.CHECK_POSITION_BOMB_5;
+        
+        
+        
+        
+        /// ********* 5 ********** ///
+          
+      gameState.CHECK_POSITION_BOMB_5:               
+        if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_5;
+        } else {
+          gameState.d = gameState.CHECK_POSITION_BOMB_6;
+        }
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        
+          
+      gameState.INCREMENT_BOMB_5:
+        alufn = b110000; bsel = 1; c = 1;
+        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        gameState.d = gameState.CHECK_POSITION_BOMB_6;
+        
+        
+      
+        /// ********* 6 ********** ///
+          
+      gameState.CHECK_POSITION_BOMB_6:               
+        if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_6;
+        } else {
+          gameState.d = gameState.CHECK_POSITION_BOMB_7;
+        }
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        
+          
+      gameState.INCREMENT_BOMB_6:
+        alufn = b110000; bsel = 1; c = 1;
+        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        gameState.d = gameState.CHECK_POSITION_BOMB_7;
+        
+       
+        /// ********* 7 ********** ///
+          
+      gameState.CHECK_POSITION_BOMB_7:               
+        if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_7;
+        } else {
+          gameState.d = gameState.UPDATE_LIVES;
+        }
+        alufn = b110100; bsel = 1; c = 1;
+        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        
+          
+      gameState.INCREMENT_BOMB_7:
+        alufn = b110000; bsel = 1; c = 1;
+        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        gameState.d = gameState.UPDATE_LIVES;
+          
+      
+      /// ***** UPDATE LIVES ***** ///
+       
       gameState.UPDATE_LIVES:
+        
         gameState.d = gameState.UPDATE_BOARD;
       
       gameState.UPDATE_BOARD:
         gameState.d = gameState.PLAY;
-    }
+        
+        
+        
+     
     
   }
 }
