@@ -63,10 +63,19 @@ module gameCU (
       INCREMENT_BOMB_5,
       INCREMENT_BOMB_6,
       INCREMENT_BOMB_7,      
-      UPDATE_LIVES,
+      
+      // Board Update
       UPDATE_BOARD,
       WIN, LOSE,
-      RESET
+      RESET,
+
+
+      // Lives
+      UPDATE_LIVES,
+      DECREMENT_PLAYER_LIFE,
+      CHECK_PLAYER_LIVES,
+      CHECK_ALIVE,
+      ALIVE_BRANCH //branch to check if player is alive   
     };
     
     .rst(rst) {
@@ -349,6 +358,29 @@ module gameCU (
           
       
       /// ***** UPDATE LIVES ***** ///
+
+      gameState.DECREMENT_PLAYER_LIFE: //TODO : Connect with Sanat's state
+        // SUB : Decrement player life by 1
+        alufn = b000001; bsel = 0; c = 0; 
+        ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
+        debug = 16b0; //TODO : can be changed next time
+
+        gameState.d = gameState.CHECK_PLAYER_LIVES;
+      
+
+      
+      gameState.CHECK_PLAYER_LIVES:
+        alufn = 1100101; bsel = 0; c = 0; 
+        ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
+
+
+      gameState.ALIVE_BRANCH:
+        // branch to Lose if player life is 0 and check game ends
+        if (reg48) {
+          gameState.d = gameState.PLAY;
+        } else {
+          gameState.d = gameState.LOSE;
+        }
        
       gameState.UPDATE_LIVES:
         
