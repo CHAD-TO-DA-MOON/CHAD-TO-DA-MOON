@@ -236,7 +236,7 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        ra = 7h01; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_0:
         //ADD
@@ -253,7 +253,7 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        ra = 7h02; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_1:
         //ADD
@@ -270,7 +270,7 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        ra = 7h03; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_2:
         //ADD  
@@ -287,7 +287,7 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        ra = 7h04; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_3:
         //ADD  
@@ -304,7 +304,7 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        ra = 7h05; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         
       gameState.INCREMENT_BOMB_4:
         //ADD  
@@ -321,7 +321,7 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        ra = 7h06; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         
       gameState.INCREMENT_BOMB_5:
         //ADD  
@@ -338,7 +338,7 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        ra = 7h07; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_6:
         //ADD  
@@ -353,9 +353,6 @@ module gameCU (
         } else {
           gameState.d = gameState.UPDATE_LIVES;
         }
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_7:
         //ADD  
