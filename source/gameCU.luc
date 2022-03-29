@@ -75,10 +75,10 @@ module gameCU (
       // Board Update
       UPDATE_BOARD,
       WIN, LOSE,
-      RESET
+      RESET,
       LINES_CHECK, // Check if the lines are 0
       DECREMENT_ROW,
-      UPDATE_ROWS, // TODO : Need rom selector
+      UPDATE_ROWS // TODO : Need rom selector
     };
     
     .rst(rst) {
@@ -416,7 +416,7 @@ module gameCU (
       // Read levels
       // TODO: Not too sure about this. need to check with @ruien
       gameState.READ_LEVELS:
-          // LD Reg[0x00 : 0x07] ‚Üê
+          // LD Reg[0x00 : 0x07] ‚Ü?
             // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
             alufn = b000000; bsel = 1; c = 1;
             // ra = addr of rom_sel
