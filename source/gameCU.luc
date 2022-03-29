@@ -74,6 +74,9 @@ module gameCU (
       
       // Board Update
       UPDATE_BOARD,
+      UPDATE_BOARD_BRANCH,
+      READ_LEVELS,
+      
       WIN, LOSE,
       RESET,
       LINES_CHECK, // Check if the lines are 0
@@ -192,7 +195,7 @@ module gameCU (
         gameState.d = gameState.RIGHT_BRANCH;
       
       gameState.RIGHT_BRANCH:
-        // PLAY if pos < 0, LEFT_REPOS otherwise
+        // RIGHT_REPOS if pos < 7, PLAY otherwise
         if (reg48) {
           gameState.d = gameState.RIGHT_REPOS;
         } else {
@@ -211,21 +214,18 @@ module gameCU (
         gameState.d = gameState.RESET_BOMBS;
       
         
-        /// ***** COUNT BOMBS ***** ///
-        
+      /// ***** COUNT BOMBS ***** ///  
       gameState.RESET_BOMBS:
         // 'A' boolean operation 
         alufn = b010011; bsel = 1; c = 0;
         ra = 8h50; rb = 8h00; rc = 8h48; we = 1; sr = 0;
         gameState.d = gameState.COUNT_BOMBS;
         
-        
       gameState.COUNT_BOMBS:
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_0;        
-       
+        gameState.d = gameState.CHECK_POSITION_BOMB_0;
      
       /// ********* 0 ********** ///
       gameState.CHECK_POSITION_BOMB_0:               
@@ -375,7 +375,7 @@ module gameCU (
             
       gameState.CHECK_PLAYER_LIVES:
         // CMPLT
-        alufn = 100011; bsel = 0; c = 0;  
+        alufn = b100011; bsel = 0; c = 0;  
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
 
       gameState.ALIVE_BRANCH:
@@ -390,7 +390,6 @@ module gameCU (
       /// ********* BOARD UPDATE ********** ///
 
       // Check whether game ends before updating the board
-      // TODO : check if we can use CMPEQ here instead
       gameState.UPDATE_BOARD:
         // CMPEQ: lines_left == 0
         alufn = b100001; bsel = 0; c = 16b0;
@@ -401,17 +400,20 @@ module gameCU (
       
       // Check if game is over or the rows is needed to be moved down
       gameState.UPDATE_BOARD_BRANCH:
+        // lines_left == 0 win; update rows otherwise
         if (reg48) {
-          gameState.d = gameState.UPDATE_ROWS;
-        } else {
           gameState.d = gameState.WIN;
+        } else {
+          gameState.d = gameState.UPDATE_ROWS;
         }
 
       // Move rows down by 1
       gameState.UPDATE_ROWS:
-        alufn = 0; bsel = 0; c = 1;
-        wesel = 1; sr = 1;
-        gameState.d == gameState.READ_LEVELS;
+        alufn = 6b0; bsel = 0; c = 1;
+        ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
+        debug = 16b0;
+        
+        gameState.d = gameState.READ_LEVELS;
       
       // Read levels
       // TODO: Not too sure about this. need to check with @ruien
@@ -431,7 +433,6 @@ module gameCU (
         ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 3b0;
         debug = 16b0;
         gameState.d = gameState.PLAY; // Game state to wait for input from player
-    
       
       
       /// ********* END GAME ********** ///
