@@ -64,43 +64,16 @@ module au_top_0 (
     .seg(M_multiSeg_seg),
     .sel(M_multiSeg_sel)
   );
-  wire [16-1:0] M_manual_t_ledout;
-  wire [16-1:0] M_manual_t_out;
-  wire [3-1:0] M_manual_t_zvn;
-  reg [1-1:0] M_manual_t_proceed;
-  reg [16-1:0] M_manual_t_data;
-  manualTester_5 manual_t (
+  wire [16-1:0] M_beta_debug;
+  reg [3-1:0] M_beta_buttons;
+  gameBeta_5 beta (
     .clk(clk),
     .rst(rst),
-    .proceed(M_manual_t_proceed),
-    .data(M_manual_t_data),
-    .ledout(M_manual_t_ledout),
-    .out(M_manual_t_out),
-    .zvn(M_manual_t_zvn)
+    .buttons(M_beta_buttons),
+    .debug(M_beta_debug)
   );
-  wire [24-1:0] M_auto_t_io_led;
-  wire [8-1:0] M_auto_t_io_seg;
-  wire [4-1:0] M_auto_t_io_sel;
-  reg [1-1:0] M_auto_t_proceed;
-  autoTester_6 auto_t (
-    .clk(clk),
-    .rst(rst),
-    .proceed(M_auto_t_proceed),
-    .io_led(M_auto_t_io_led),
-    .io_seg(M_auto_t_io_seg),
-    .io_sel(M_auto_t_io_sel)
-  );
-  
-  
-  localparam AUTO_tester = 2'd0;
-  localparam MANUAL_tester = 2'd1;
-  localparam IDLE_tester = 2'd2;
-  
-  reg [1:0] M_tester_d, M_tester_q = IDLE_tester;
   
   always @* begin
-    M_tester_d = M_tester_q;
-    
     M_reset_cond_in = ~rst_n;
     rst = M_reset_cond_out;
     usb_tx = usb_rx;
@@ -110,54 +83,11 @@ module au_top_0 (
     io_sel = 4'hf;
     M_button_cond_in = io_button;
     M_buttondetector_in = M_button_cond_out;
-    M_manual_t_proceed = M_buttondetector_out[2+0-:1];
-    M_manual_t_data[0+7-:8] = io_dip[0+7-:8];
-    M_manual_t_data[8+7-:8] = io_dip[8+7-:8];
-    M_auto_t_proceed = M_buttondetector_out[2+0-:1];
+    M_beta_buttons[0+0-:1] = M_buttondetector_out[3+0-:1];
+    M_beta_buttons[1+0-:1] = M_buttondetector_out[2+0-:1];
+    M_beta_buttons[2+0-:1] = M_buttondetector_out[4+0-:1];
     M_multiSeg_values = 16'hffff;
     io_seg = ~M_multiSeg_seg;
     io_sel = ~M_multiSeg_sel;
-    
-    case (M_tester_q)
-      IDLE_tester: begin
-        M_multiSeg_values = 16'h0000;
-        io_seg = ~M_multiSeg_seg;
-        io_sel = ~M_multiSeg_sel;
-        if (M_buttondetector_out[3+0-:1]) begin
-          M_tester_d = MANUAL_tester;
-        end
-        if (M_buttondetector_out[4+0-:1]) begin
-          M_tester_d = AUTO_tester;
-        end
-      end
-      AUTO_tester: begin
-        io_led = M_auto_t_io_led;
-        io_seg = M_auto_t_io_seg;
-        io_sel = M_auto_t_io_sel;
-        if (M_buttondetector_out[1+0-:1]) begin
-          M_tester_d = IDLE_tester;
-        end
-      end
-      MANUAL_tester: begin
-        io_led[16+0+2-:3] = M_manual_t_zvn;
-        io_led[8+7-:8] = M_manual_t_ledout[8+7-:8];
-        io_led[0+7-:8] = M_manual_t_ledout[0+7-:8];
-        io_seg = ~M_multiSeg_seg;
-        io_sel = ~M_multiSeg_sel;
-        M_multiSeg_values = M_manual_t_out;
-        if (M_buttondetector_out[1+0-:1]) begin
-          M_tester_d = IDLE_tester;
-        end
-      end
-    endcase
   end
-  
-  always @(posedge clk) begin
-    if (rst == 1'b1) begin
-      M_tester_q <= 2'h2;
-    end else begin
-      M_tester_q <= M_tester_d;
-    end
-  end
-  
 endmodule

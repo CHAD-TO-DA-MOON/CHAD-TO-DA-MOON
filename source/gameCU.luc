@@ -157,7 +157,7 @@ module gameCU (
         
         
       gameState.COUNT_BOMBS:
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_0;        
        
@@ -170,12 +170,12 @@ module gameCU (
         } else {
           gameState.d = gameState.CHECK_POSITION_BOMB_1;
         }
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         
           
       gameState.INCREMENT_BOMB_0:
-        alufn = b110000; bsel = 1; c = 1;
+        alufn = b000000; bsel = 1; c = 1;
         ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_1;
       
@@ -189,12 +189,12 @@ module gameCU (
         } else {
           gameState.d = gameState.CHECK_POSITION_BOMB_2;
         }
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         
           
       gameState.INCREMENT_BOMB_1:
-        alufn = b110000; bsel = 1; c = 1;
+        alufn = b000000; bsel = 1; c = 1;
         ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_2;
         
@@ -208,12 +208,12 @@ module gameCU (
         } else {
           gameState.d = gameState.CHECK_POSITION_BOMB_3;
         }
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         
           
       gameState.INCREMENT_BOMB_2:
-        alufn = b110000; bsel = 1; c = 1;
+        alufn = b000000; bsel = 1; c = 1;
         ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_3;
         
@@ -227,12 +227,12 @@ module gameCU (
         } else {
           gameState.d = gameState.CHECK_POSITION_BOMB_4;
         }
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         
           
       gameState.INCREMENT_BOMB_3:
-        alufn = b110000; bsel = 1; c = 1;
+        alufn = b000000; bsel = 1; c = 1;
         ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_4;
         
@@ -246,12 +246,12 @@ module gameCU (
         } else {
           gameState.d = gameState.CHECK_POSITION_BOMB_5;
         }
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         
           
       gameState.INCREMENT_BOMB_4:
-        alufn = b110000; bsel = 1; c = 1;
+        alufn = b000000; bsel = 1; c = 1;
         ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_5;
         
@@ -266,12 +266,12 @@ module gameCU (
         } else {
           gameState.d = gameState.CHECK_POSITION_BOMB_6;
         }
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         
           
       gameState.INCREMENT_BOMB_5:
-        alufn = b110000; bsel = 1; c = 1;
+        alufn = b000000; bsel = 1; c = 1;
         ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_6;
         
@@ -285,12 +285,12 @@ module gameCU (
         } else {
           gameState.d = gameState.CHECK_POSITION_BOMB_7;
         }
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         
           
       gameState.INCREMENT_BOMB_6:
-        alufn = b110000; bsel = 1; c = 1;
+        alufn = b000000; bsel = 1; c = 1;
         ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_7;
         
@@ -303,12 +303,12 @@ module gameCU (
         } else {
           gameState.d = gameState.UPDATE_LIVES;
         }
-        alufn = b110100; bsel = 1; c = 1;
+        alufn = b110011; bsel = 1; c = 1;
         ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
         
           
       gameState.INCREMENT_BOMB_7:
-        alufn = b110000; bsel = 1; c = 1;
+        alufn = b000000; bsel = 1; c = 1;
         ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
         gameState.d = gameState.UPDATE_LIVES;
           

@@ -4,7 +4,7 @@
 
 set TIME_start [clock seconds] 
 namespace eval ::optrace {
-  variable script "D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.runs/synth_1/au_top_0.tcl"
+  variable script "C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.runs/synth_1/au_top_0.tcl"
   variable category "vivado_synth"
 }
 
@@ -76,39 +76,32 @@ create_project -in_memory -part xc7a35tftg256-1
 set_param project.singleFileAddWarning.threshold 0
 set_param project.compositeFile.enableAutoGeneration 0
 set_param synth.vivado.isSynthRun true
-set_property webtalk.parent_dir D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.cache/wt [current_project]
-set_property parent.project_path D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.xpr [current_project]
+set_property webtalk.parent_dir C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.cache/wt [current_project]
+set_property parent.project_path C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.xpr [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language Verilog [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adderTester_19.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adder_13.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/aluTester_12.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/alu_11.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/autoTester_6.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/booleanTester_20.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/boolean_14.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/button_conditioner_2.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compareTester_23.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compare_16.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/counter_8.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/decoder_10.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/edge_detector_3.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/manualTester_5.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimumTester_24.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimum_18.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiSevenSegment_4.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplierTester_21.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplier_17.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/pipeline_7.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/reset_conditioner_1.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/sevenSegment_9.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifterTester_22.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifter_15.v
-  D:/repos/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/au_top_0.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/adder_12.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/boolean_13.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/button_conditioner_2.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/compare_15.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/counter_7.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/decoder_9.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/edge_detector_3.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/gameAlu_10.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/gameBeta_5.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/gameCU_11.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/minimum_17.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiSevenSegment_4.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/multiplier_16.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/pipeline_6.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/reset_conditioner_1.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/sevenSegment_8.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/shifter_14.v
+  C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/vivado/CHAD-TO-DA-MOON/CHAD-TO-DA-MOON.srcs/sources_1/imports/verilog/au_top_0.v
 }
 OPTRACE "Adding files" END { }
 # Mark all dcp files as not used in implementation to prevent them from being
@@ -119,11 +112,11 @@ OPTRACE "Adding files" END { }
 foreach dcp [get_files -quiet -all -filter file_type=="Design\ Checkpoint"] {
   set_property used_in_implementation false $dcp
 }
-read_xdc D:/repos/CHAD-TO-DA-MOON/work/constraint/alchitry.xdc
-set_property used_in_implementation false [get_files D:/repos/CHAD-TO-DA-MOON/work/constraint/alchitry.xdc]
+read_xdc C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/constraint/alchitry.xdc
+set_property used_in_implementation false [get_files C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/constraint/alchitry.xdc]
 
-read_xdc D:/repos/CHAD-TO-DA-MOON/work/constraint/io.xdc
-set_property used_in_implementation false [get_files D:/repos/CHAD-TO-DA-MOON/work/constraint/io.xdc]
+read_xdc C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/constraint/io.xdc
+set_property used_in_implementation false [get_files C:/Users/sanat/Desktop/istd_4/CHAD-TO-DA-MOON/work/constraint/io.xdc]
 
 read_xdc {{C:/Program Files/Alchitry/Alchitry Labs/library/components/au.xdc}}
 set_property used_in_implementation false [get_files {{C:/Program Files/Alchitry/Alchitry Labs/library/components/au.xdc}}]
