@@ -415,15 +415,15 @@ module gameCU (
         
         gameState.d = gameState.READ_LEVELS;
       
-      // Read levels
+      // Read levels from ROM, may not be needed if implemented in regfile (sr=1)
       // TODO: Not too sure about this. need to check with @ruien
-      gameState.READ_LEVELS:
+      // gameState.READ_LEVELS:
           // LD Reg[0x00 : 0x07] â†?
-            // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
-            alufn = b000000; bsel = 1; c = 1;
-            // ra = addr of rom_sel
-            c = 1; we = 1; sr = 0;
-            gameState.d = gameState.DECREMENT_ROW;
+          // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
+          // alufn = b000000; bsel = 1; c = 1;
+          // ra = addr of rom_sel
+          // c = 1; we = 1; sr = 0;
+          // gameState.d = gameState.DECREMENT_ROW;
 
 
       // State to move the rows down
