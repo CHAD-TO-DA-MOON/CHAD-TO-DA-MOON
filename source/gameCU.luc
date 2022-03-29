@@ -76,6 +76,9 @@ module gameCU (
       UPDATE_BOARD,
       WIN, LOSE,
       RESET
+      LINES_CHECK, // Check if the lines are 0
+      DECREMENT_ROW,
+      UPDATE_ROWS, // TODO : Need rom selector
     };
     
     .rst(rst) {
@@ -371,7 +374,7 @@ module gameCU (
         gameState.d = gameState.CHECK_PLAYER_LIVES;
             
       gameState.CHECK_PLAYER_LIVES:
-      // CMPLT
+        // CMPLT
         alufn = 100011; bsel = 0; c = 0;  
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
 
@@ -385,8 +388,50 @@ module gameCU (
        
       
       /// ********* BOARD UPDATE ********** ///
+
+      // Check whether game ends before updating the board
+      // TODO : check if we can use CMPEQ here instead
       gameState.UPDATE_BOARD:
-        gameState.d = gameState.PLAY;
+        // CMPEQ: lines_left == 0
+        alufn = b100001; bsel = 0; c = 16b0;
+        ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
+        debug = 16b0;
+
+        gameState.d = gameState.UPDATE_BOARD_BRANCH;
+      
+      // Check if game is over or the rows is needed to be moved down
+      gameState.UPDATE_BOARD_BRANCH:
+        if (reg48) {
+          gameState.d = gameState.UPDATE_ROWS;
+        } else {
+          gameState.d = gameState.WIN;
+        }
+
+      // Move rows down by 1
+      gameState.UPDATE_ROWS:
+        alufn = 0; bsel = 0; c = 1;
+        wesel = 1; sr = 1;
+        gameState.d == gameState.READ_LEVELS;
+      
+      // Read levels
+      // TODO: Not too sure about this. need to check with @ruien
+      gameState.READ_LEVELS:
+          // LD Reg[0x00 : 0x07] ←
+            // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
+            alufn = b000000; bsel = 1; c = 1;
+            // ra = addr of rom_sel
+            c = 1; we = 1; sr = 0;
+            gameState.d = gameState.DECREMENT_ROW;
+
+
+      // State to move the rows down
+      gameState.DECREMENT_ROW:
+        // SUB : lines_left = lines_left - 1
+        alufn = b000001; bsel = 0; c = 16b0;
+        ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 3b0;
+        debug = 16b0;
+        gameState.d = gameState.PLAY; // Game state to wait for input from player
+    
       
       
       /// ********* END GAME ********** ///
