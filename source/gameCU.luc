@@ -40,10 +40,22 @@ module gameCU (
       SHOOT, // check ammo, shoot, remove bomb, decrement ammo
       
       COUNT_BOMBS, // calculate bombs
+      BOMB_HIT, // Check if the bomb has hit the floor
+      
+
       UPDATE_LIVES,
       UPDATE_BOARD,
       WIN, LOSE,
-      RESET
+      RESET,
+
+      CHECK_GAME_END
+
+      // Lives
+      UPDATE_LIVES,
+      DECREMENT_PLAYER_LIFE,
+      CHECK_PLAYER_LIVES,
+      CHECK_ALIVE
+
     };
     
     .rst(rst) {
@@ -144,6 +156,36 @@ module gameCU (
       
       gameState.UPDATE_BOARD:
         gameState.d = gameState.PLAY;
+        
+     // Lives
+      gameState.BOMB_HIT:
+        gameState.d = gameState.DECREMENT_PLAYER_LIFE;
+      
+      gameState.DECREMENT_PLAYER_LIFE:
+        // SUB : Decrement player life by 1
+        alufn = b000001; bsel = 0; c = 0; 
+        ra = 7h54; rb = 7h49, rc = 7h54; we = 1; sr = 0;
+        debug = 16b0; //TODO : can be changed next time
+
+        gameState.d = gameState.CHECK_PLAYER_LIVES;
+      
+
+      
+      gameState.CHECK_PLAYER_LIVES:
+        alufn = 1100101; bsel = 0; c = 0; 
+        ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
+
+
+      gameState.ALIVE_BRANCH:
+        // branch to Lose if player life is 0 and check game ends
+        if (reg48) {
+          gameState.d = gameState.PLAY;
+        } else {
+          gameState.d = gameState.LOSE;
+        }
+
+
+
     }
     
   }
