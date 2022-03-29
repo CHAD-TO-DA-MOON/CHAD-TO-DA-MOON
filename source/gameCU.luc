@@ -371,7 +371,8 @@ module gameCU (
         gameState.d = gameState.CHECK_PLAYER_LIVES;
             
       gameState.CHECK_PLAYER_LIVES:
-        alufn = 1100011; bsel = 0; c = 0;  // CMPLT
+      // CMPLT
+        alufn = 100011; bsel = 0; c = 0;  
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
 
       gameState.ALIVE_BRANCH:
