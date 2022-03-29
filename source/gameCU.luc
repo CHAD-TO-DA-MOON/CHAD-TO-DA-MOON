@@ -72,7 +72,6 @@ module gameCU (
 
       // Lives
       UPDATE_LIVES,
-      DECREMENT_PLAYER_LIFE,
       CHECK_PLAYER_LIVES,
       CHECK_ALIVE,
       ALIVE_BRANCH //branch to check if player is alive   
@@ -359,7 +358,7 @@ module gameCU (
       
       /// ***** UPDATE LIVES ***** ///
 
-      gameState.DECREMENT_PLAYER_LIFE: //TODO : Connect with Sanat's state
+      gameState.UPDATE_LIVES: //TODO : Connect with Sanat's state
         // SUB : Decrement player life by bomb counter
         alufn = b000001; bsel = 0; c = 0; 
         ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
@@ -377,14 +376,11 @@ module gameCU (
       gameState.ALIVE_BRANCH:
         // branch to Lose if player life is 0 and check game ends
         if (reg48) {
-          gameState.d = gameState.PLAY;
+          gameState.d = gameState.UPDATE_BOARD;
         } else {
           gameState.d = gameState.LOSE;
         }
        
-      gameState.UPDATE_LIVES:
-        
-        gameState.d = gameState.UPDATE_BOARD;
       
       gameState.UPDATE_BOARD:
         gameState.d = gameState.PLAY;
