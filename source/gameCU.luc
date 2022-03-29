@@ -218,13 +218,13 @@ module gameCU (
       gameState.RESET_BOMBS:
         // 'A' boolean operation 
         alufn = b010011; bsel = 1; c = 0;
-        ra = 8h50; rb = 8h00; rc = 8h48; we = 1; sr = 0;
+        ra = 7h50; rb = 7h00; rc = 7h48; we = 1; sr = 0;
         gameState.d = gameState.COUNT_BOMBS;
         
       gameState.COUNT_BOMBS:
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_0;
      
       /// ********* 0 ********** ///
@@ -236,12 +236,12 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_0:
         //ADD
         alufn = b000000; bsel = 1; c = 1;
-        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_1;
         
       /// ********* 1 ********** ///
@@ -253,12 +253,12 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_1:
         //ADD
         alufn = b000000; bsel = 1; c = 1;
-        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_2;
         
       /// ********* 2 ********** ///
@@ -270,12 +270,12 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_2:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
-        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_3;
       
       /// ********* 3 ********** ///
@@ -287,12 +287,12 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_3:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
-        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_4;
       
       /// ********* 4 ********** ///
@@ -304,12 +304,12 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         
       gameState.INCREMENT_BOMB_4:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
-        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_5;
         
       /// ********* 5 ********** ///
@@ -321,12 +321,12 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         
       gameState.INCREMENT_BOMB_5:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
-        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_6;
       
       /// ********* 6 ********** ///
@@ -338,12 +338,12 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_6:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
-        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_7;
        
       /// ********* 7 ********** ///
@@ -355,12 +355,12 @@ module gameCU (
         }
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
-        ra = 8h00; rb = 8h00; rc = 8h48; we = 0; sr = 0;
+        ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
       gameState.INCREMENT_BOMB_7:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
-        ra = 8h49; rb = 0; rc = 8h49; we = 1; sr = 0;
+        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.UPDATE_LIVES;
       
       
