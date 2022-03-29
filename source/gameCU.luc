@@ -3,6 +3,7 @@ module gameCU (
     input rst,        // reset
     input buttons[3], // button input, 0-2 left to right
     input reg48[16],  // branching reg
+    input timerTick,  // 1 when timer should update (edge detector)
     
     output alufn[6],  // define ALU op
     output bsel,      // 0 for OP, 1 for OPC
@@ -18,7 +19,7 @@ module gameCU (
   ) {
   
   // TODOS
-  // Add timer
+  // Add little time left (Timer)
   // Reduce states from branching (due to boostrapped reg48)
   // Add shooting
   // bsel and c can be simplified into one control signal
@@ -28,6 +29,10 @@ module gameCU (
     fsm gameState(#INIT(IDLE)) = {
       IDLE, // await start game, initialise board
       PLAY, // await player action
+      
+      TIMER_CHECK, // check if game ended, decrease otherwise
+      TIMER_BRANCH,
+      TIMER_DECREASE,
       
       LEFT_CHECK, // check left bounds, move player
       LEFT_BRANCH,
@@ -78,16 +83,43 @@ module gameCU (
         if (buttons[0]) {
           gameState.d = gameState.LEFT_CHECK;
         }
-        if (buttons[1]) {
+        else if (buttons[1]) {
           gameState.d = gameState.SHOOT;
         }
-        if (buttons[2]) {
+        else if (buttons[2]) {
           gameState.d = gameState.RIGHT_CHECK;
+        } 
+        else if (timerTick) {
+          gameState.d = gameState.TIMER_CHECK;
         }
+      
+      gameState.TIMER_CHECK:
+        // CMPEQ: time == 0
+        alufn = b110011; bsel = 0; c = 16b0;
+        ra = 7h4A; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
+        debug = 16b0;
+        
+        gameState.d = gameState.TIMER_BRANCH;
+      
+      gameState.TIMER_BRANCH:
+        // LOSE if time == 0, TIMER_DECREASE otherwise
+        if (reg48) {
+          gameState.d = gameState.LOSE;
+        } else {
+          gameState.d = gameState.TIMER_DECREASE;
+        }
+      
+      gameState.TIMER_DECREASE:
+        // SUB: decrease timer by 1
+        alufn = b000001; bsel = 0; c = 16b0;
+        ra = 7h4A; rb = 7h51; rc = 7h4A; we = 1; sr = 3b0;
+        debug = 16b0;
+        
+        gameState.d = gameState.PLAY;
       
       gameState.LEFT_CHECK:
         // CMPLT: player pos < 0
-        alufn = b100101; bsel = 0; c = 16b0;
+        alufn = b110101; bsel = 0; c = 16b0;
         ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
         debug = 16b0;
         
@@ -103,7 +135,7 @@ module gameCU (
       
       gameState.LEFT_REPOS:
         // SUB: move player left
-        alufn = b100001; bsel = 0; c = 16b0; 
+        alufn = b000001; bsel = 0; c = 16b0; 
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
         debug = 16b0;
         
@@ -111,7 +143,7 @@ module gameCU (
       
       gameState.RIGHT_CHECK:
         // CMPLEC: player pos < 7
-        alufn = b110110; bsel = 1; c = 16h0007;
+        alufn = b110111; bsel = 1; c = 16h0007;
         ra = 7h56; rb = 7h00; rc = 7h48; we = 1; sr = 3b0;
         debug = 16b0;
         
@@ -127,7 +159,7 @@ module gameCU (
       
       gameState.RIGHT_REPOS:
         // ADD: move player right
-        alufn = b100000; bsel = 0; c = 16b0; 
+        alufn = b000000; bsel = 0; c = 16b0; 
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
         debug = 16b0;
         
@@ -144,6 +176,7 @@ module gameCU (
       
       gameState.UPDATE_BOARD:
         gameState.d = gameState.PLAY;
+      
     }
     
   }
