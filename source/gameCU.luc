@@ -15,6 +15,8 @@ module gameCU (
     output we,        // write enable
     output sr[3],     // update board gameState regs
     
+    output ioState[4],// 0: -, 1: blank, 2: win, 3: lose, 4: low time
+    
     output debug[16]  // 7seg debug output
   ) {
   
@@ -78,6 +80,7 @@ module gameCU (
     // default control signals
     alufn = 6b0; bsel = 0; c = 16b0; 
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 3b0;
+    ioState = 4h0;
     debug = 16b0;
     
     if(rst) {
@@ -87,7 +90,7 @@ module gameCU (
     case(gameState.q) {
       gameState.IDLE:
         if (buttons[0] || buttons[1] || buttons[2]) {
-          // reset board regs
+          // shift down by 1 row
           alufn = 6b0; bsel = 0; c = 16b1; 
           ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = b001;
           debug = 16b0;
@@ -353,10 +356,19 @@ module gameCU (
       
       gameState.UPDATE_BOARD:
         gameState.d = gameState.PLAY;
-        
-        
-    }      
-     
+      
+      gameState.WIN:
+        ioState = 4h2;
+        if (buttons[0] || buttons[1] || buttons[2]) {
+          gameState.d = gameState.IDLE;
+        }
+      
+      gameState.LOSE:
+        ioState = 4h3;
+        if (buttons[0] || buttons[1] || buttons[2]) {
+          gameState.d = gameState.IDLE;
+        }
+    }
     
   }
 }
