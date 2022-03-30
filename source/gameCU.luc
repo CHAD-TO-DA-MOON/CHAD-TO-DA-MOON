@@ -96,11 +96,13 @@ module gameCU (
     alufn = 6b0; bsel = 0; c = 16b0; 
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 3b0;
     ioState = 4h0;
-    debug = 16b0;
+    debug = 16h0000;
     
     if(rst) {
       gameState.d = gameState.IDLE;
     }
+
+      /// ********* GAME STATE MACHINE ********** ///
   
     case(gameState.q) {
       gameState.IDLE:
@@ -108,7 +110,7 @@ module gameCU (
           // shift down by 1 row
           alufn = 6b0; bsel = 0; c = 16b1; 
           ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = b001;
-          debug = 16b0;
+          debug = 16h0001;
           
           gameState.d = gameState.INIT_TIMER;
         }
@@ -116,7 +118,7 @@ module gameCU (
       gameState.INIT_TIMER:
         alufn = 6b000000; bsel = 0; c = 16b0; 
         ra = 7h0; rb = 7h0; rc = 7h4A; we = 1; sr = 3b0;
-        debug = 16b0;
+        debug = 16h0002;
         
         gameState.d = gameState.PLAY;
       
@@ -133,6 +135,8 @@ module gameCU (
         else if (timerTick) {
           gameState.d = gameState.TIMER_CHECK;
         }
+        debug = 16h0003;
+
       
       
       /// ********* TIMER ********** ///
@@ -140,7 +144,7 @@ module gameCU (
         // CMPEQ: time == 0
         alufn = b100001; bsel = 0; c = 16b0;
         ra = 7h4A; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
-        debug = 16b0;
+        debug = 16h0010;
         
         gameState.d = gameState.TIMER_BRANCH;
       
@@ -151,12 +155,13 @@ module gameCU (
         } else {
           gameState.d = gameState.TIMER_DECREASE;
         }
+        debug = 16h0011;
       
       gameState.TIMER_DECREASE:
         // SUB: decrease timer by 1
         alufn = b000001; bsel = 0; c = 16b0;
         ra = 7h4A; rb = 7h51; rc = 7h4A; we = 1; sr = 3b0;
-        debug = 16b0;
+        debug = 16h0012;
         
         gameState.d = gameState.PLAY;
       
@@ -166,7 +171,7 @@ module gameCU (
         // CMPLT: player pos < 0
         alufn = b100011; bsel = 0; c = 16b0;
         ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
-        debug = 16b0;
+        debug = 16h0020;
         
         gameState.d = gameState.LEFT_BRANCH;
       
@@ -177,12 +182,14 @@ module gameCU (
         } else {
           gameState.d = gameState.LEFT_REPOS;
         }
+        debug = 16h0021;
+
       
       gameState.LEFT_REPOS:
         // SUB: move player left
         alufn = b000001; bsel = 0; c = 16b0; 
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
-        debug = 16b0;
+        debug = 16h0022;
         
         gameState.d = gameState.RESET_BOMBS;
       
@@ -190,7 +197,7 @@ module gameCU (
         // CMPLEC: player pos < 7
         alufn = b100011; bsel = 1; c = 16h0007;
         ra = 7h56; rb = 7h00; rc = 7h48; we = 1; sr = 3b0;
-        debug = 16b0;
+        debug = 16h0023;
         
         gameState.d = gameState.RIGHT_BRANCH;
       
@@ -201,18 +208,21 @@ module gameCU (
         } else {
           gameState.d = gameState.PLAY;
         }
+        debug = 16h0024;
+
       
       gameState.RIGHT_REPOS:
         // ADD: move player right
         alufn = b000000; bsel = 0; c = 16b0; 
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
-        debug = 16b0;
+        debug = 16h0025;
         
         gameState.d = gameState.RESET_BOMBS;
       
-      gameState.SHOOT:
+      gameState.SHOOT: //TODO : Not done yet. Might need to decrease ammo counter
         gameState.d = gameState.RESET_BOMBS;
-      
+        debug = 16h0026;
+
         
       /// ***** COUNT BOMBS ***** ///  
       gameState.RESET_BOMBS:
@@ -220,12 +230,16 @@ module gameCU (
         alufn = b010011; bsel = 1; c = 0;
         ra = 7h50; rb = 7h00; rc = 7h48; we = 1; sr = 0;
         gameState.d = gameState.COUNT_BOMBS;
+        debug = 16h0030;
+
         
       gameState.COUNT_BOMBS:
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_0;
+        debug = 16h0031;
+
      
       /// ********* 0 ********** ///
       gameState.CHECK_POSITION_BOMB_0:               
@@ -237,12 +251,15 @@ module gameCU (
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h01; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        debug = 16h0032;
+
           
       gameState.INCREMENT_BOMB_0:
         //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_1;
+        debug = 16h0033;
         
       /// ********* 1 ********** ///
       gameState.CHECK_POSITION_BOMB_1:               
@@ -254,13 +271,16 @@ module gameCU (
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h02; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        debug = 16h0034;
           
       gameState.INCREMENT_BOMB_1:
         //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_2;
-        
+        debug = 16h0035;
+
+
       /// ********* 2 ********** ///
       gameState.CHECK_POSITION_BOMB_2:               
         if (reg48) {
@@ -271,13 +291,17 @@ module gameCU (
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h03; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-          
+        debug = 16h0036;
+
+
       gameState.INCREMENT_BOMB_2:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_3;
+        debug = 16h0037;
       
+
       /// ********* 3 ********** ///
       gameState.CHECK_POSITION_BOMB_3:               
         if (reg48) {
@@ -288,13 +312,17 @@ module gameCU (
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h04; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        debug = 16h0038;
+
           
       gameState.INCREMENT_BOMB_3:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_4;
-      
+        debug = 16h0039;
+
+
       /// ********* 4 ********** ///
       gameState.CHECK_POSITION_BOMB_4:               
         if (reg48) {
@@ -305,12 +333,16 @@ module gameCU (
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h05; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        debug = 16h0040;
+
         
       gameState.INCREMENT_BOMB_4:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_5;
+        debug = 16h0041;
+
         
       /// ********* 5 ********** ///
       gameState.CHECK_POSITION_BOMB_5:               
@@ -322,12 +354,15 @@ module gameCU (
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h06; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        debug = 16h0042;
         
       gameState.INCREMENT_BOMB_5:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_6;
+        debug = 16h0043;
+
       
       /// ********* 6 ********** ///
       gameState.CHECK_POSITION_BOMB_6:               
@@ -339,12 +374,15 @@ module gameCU (
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h07; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+        debug = 16h0044;
+
           
       gameState.INCREMENT_BOMB_6:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_7;
+        debug = 16h0045;
        
       /// ********* 7 ********** ///
       gameState.CHECK_POSITION_BOMB_7:               
@@ -353,12 +391,14 @@ module gameCU (
         } else {
           gameState.d = gameState.UPDATE_LIVES;
         }
+        debug = 16h0046;
           
       gameState.INCREMENT_BOMB_7:
         //ADD  
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.UPDATE_LIVES;
+        debug = 16h0047;
       
       
       /// ***** UPDATE LIVES ***** ///
@@ -366,14 +406,14 @@ module gameCU (
         // SUB : Decrement player life by bomb counter
         alufn = b000001; bsel = 0; c = 0;  // SUB
         ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
-        debug = 16b0; //TODO : can be changed next time
-
         gameState.d = gameState.CHECK_PLAYER_LIVES;
+        debug = 16h0050;
             
       gameState.CHECK_PLAYER_LIVES:
         // CMPLT
         alufn = b100011; bsel = 0; c = 0;  
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
+        debug = 16h0051;
 
       gameState.ALIVE_BRANCH:
         // branch to Lose if player life is 0 and check game ends
@@ -382,6 +422,7 @@ module gameCU (
         } else {
           gameState.d = gameState.LOSE;
         }
+        debug = 16h0052;
        
       
       /// ********* BOARD UPDATE ********** ///
@@ -391,7 +432,7 @@ module gameCU (
         // CMPEQ: lines_left == 0
         alufn = b100001; bsel = 0; c = 16b0;
         ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        debug = 16b0;
+        debug = 16h0060;
 
         gameState.d = gameState.UPDATE_BOARD_BRANCH;
       
@@ -403,19 +444,20 @@ module gameCU (
         } else {
           gameState.d = gameState.UPDATE_ROWS;
         }
+        debug = 16h0061;
 
       // Move rows down by 1
       gameState.UPDATE_ROWS:
         alufn = 6b0; bsel = 0; c = 1;
         ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
-        debug = 16b0;
         
         gameState.d = gameState.READ_LEVELS;
+        debug = 16h0062;
       
       // Read levels from ROM, may not be needed if implemented in regfile (sr=1)
       // TODO: Not too sure about this. need to check with @ruien
       // gameState.READ_LEVELS:
-          // LD Reg[0x00 : 0x07] â†?
+          // LD Reg[0x00 : 0x07] ï¿½?
           // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
           // alufn = b000000; bsel = 1; c = 1;
           // ra = addr of rom_sel
@@ -430,7 +472,7 @@ module gameCU (
         ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 3b0;
         debug = 16b0;
         gameState.d = gameState.PLAY; // Game state to wait for input from player
-      
+        debug = 16h0063;      
       
       /// ********* END GAME ********** ///
       gameState.WIN:
@@ -438,12 +480,16 @@ module gameCU (
         if (buttons[0] || buttons[1] || buttons[2]) {
           gameState.d = gameState.IDLE;
         }
+        debug = 16h0070;      
+
       
       gameState.LOSE:
         ioState = 4h3;
         if (buttons[0] || buttons[1] || buttons[2]) {
           gameState.d = gameState.IDLE;
         }
+        debug = 16h0071;      
+
     }
     
   }
