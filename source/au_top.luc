@@ -8,10 +8,14 @@ module au_top (
     output io_seg [8],      // 7-segment LEDs on IO Shield
     output io_sel [4],      // Digit select on IO Shield
     input io_button [5],    // 5 buttons on IO Shield
-    input io_dip [3][8]     // DIP switches on IO Shield
+    input io_dip [3][8],     // DIP switches on IO Shield
+    output outled           // pin3 LED_STRIP
   ) {
   
   sig rst;                  // reset signal
+  const LEDCOLOR = {hFF0000, h00FF00, h0000FF, h9B673C, hFF0000, h00FF00, h0000FF, h9B673C, hFF0000, h00FF00};
+  ws2812b_writer led_strip(#PIXEL_COUNT(10), .clk(clk), .rst(rst)); //set for 3 pixels
+  
   .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA
     // clock. This ensures the entire FPGA comes out of reset at the same time.
@@ -50,5 +54,10 @@ module au_top (
     multiSeg.values = $build(16hFFFF,4);
     io_seg = ~multiSeg.seg;
     io_sel = ~multiSeg.sel;
+    
+    // led_strip
+    led_strip.update = 1; //sample write 
+    led_strip.color=LEDCOLOR[led_strip.pixel];
+    outled=led_strip.led;
   }
 }
