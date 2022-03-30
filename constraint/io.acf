@@ -68,4 +68,4 @@ pin io_seg[5] A3;
 pin io_seg[6] A2;
 pin io_seg[7] A49;
 
-pin outled C3;
+// pin outled C3;

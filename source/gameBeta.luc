@@ -2,11 +2,14 @@ module gameBeta (
     input clk,        // clock
     input rst,        // reset
     input buttons[3], // button input, 0-2 left to right
-    output debug[16]
+    output debug[16],
+    input proceed
   ) {
   
   gameAlu alu;
   sig aluB[16];
+  
+  // gameCU cu;
   
   .clk(clk) {
     edge_detector edTimer(#RISE(1), #FALL(0));
@@ -23,8 +26,11 @@ module gameBeta (
     cu.timerTick = edTimer.out;
     
     // CU - bootstrap branching reg to CU
+    // cu.clk = slowTimer.value;
+    // cu.rst = rst;
     cu.buttons = buttons;    
     cu.reg48 = 0; // placeholder for reg[0x48]
+    cu.proceed = proceed;
     
     // REGFILE
     
@@ -41,6 +47,6 @@ module gameBeta (
     alu.alufn = cu.alufn;
     
     // DEBUG
-    debug = 16b0;
+    debug = cu.debug;
   }
 }

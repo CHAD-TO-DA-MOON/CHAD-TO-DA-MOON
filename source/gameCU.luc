@@ -4,6 +4,7 @@ module gameCU (
     input buttons[3], // button input, 0-2 left to right
     input reg48[16],  // branching reg
     input timerTick,  // 1 when timer should update (edge detector)
+    input proceed,
     
     output alufn[6],  // define ALU op
     output bsel,      // 0 for OP, 1 for OPC
@@ -96,7 +97,7 @@ module gameCU (
     alufn = 6b0; bsel = 0; c = 16b0; 
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 3b0;
     ioState = 4h0;
-    debug = 16h0000;
+    debug = 16h0008;
     
     if(rst) {
       gameState.d = gameState.IDLE;
@@ -106,7 +107,7 @@ module gameCU (
   
     case(gameState.q) {
       gameState.IDLE:
-        if (buttons[0] || buttons[1] || buttons[2]) {
+        if (proceed) {
           // shift down by 1 row
           alufn = 6b0; bsel = 0; c = 16b1; 
           ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = b001;
@@ -414,6 +415,8 @@ module gameCU (
         alufn = b100011; bsel = 0; c = 0;  
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
         debug = 16h0051;
+        
+        gameState.d = gameState.ALIVE_BRANCH;
 
       gameState.ALIVE_BRANCH:
         // branch to Lose if player life is 0 and check game ends
