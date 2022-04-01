@@ -54,9 +54,12 @@ module au_top (
     beta.debugIn[15:8] = io_dip[1];
     
     // 7segment
-    multiSeg.values = $build(beta.debug, 4);
+    multiSeg.values = $build(beta.debugSeg, 4);
     io_seg = ~multiSeg.seg;
     io_sel = ~multiSeg.sel;
+    
+    io_led[0] = beta.debugLed[7:0];
+    io_led[1] = beta.debugLed[15:8];
     
     // led_strip
     led_strip.update = 1; //sample write 
