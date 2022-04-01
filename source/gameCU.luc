@@ -31,7 +31,7 @@ module gameCU (
   .clk(clk) {
     
     //Edge Detector
-    edge_detector game_timer_detector(#RISE(1), #FALL(0));
+    edge_detector slow_clock_edge_detector(#RISE(1), #FALL(0));
     
     fsm gameState(#INIT(IDLE)) = {
       IDLE, // await start game, initialise board
@@ -123,7 +123,7 @@ module gameCU (
     debugSeg = 16h0000;
     
     //edge detectors
-    game_timer_detector.in = slow_timer.value; // Put counter through edge detector
+    slow_clock_edge_detector.in = slow_timer.value; // Put counter through edge detector
     
     if(rst) {
       gameState.d = gameState.IDLE;
@@ -138,12 +138,12 @@ module gameCU (
         }
         
         debugSeg = 16h0001;
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           gameState.d = gameState.IDLE_DEBUG;
         }
       
       gameState.IDLE_DEBUG:
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           gameState.d = gameState.INIT_TIMER;
         }
       
@@ -152,7 +152,7 @@ module gameCU (
         ra = 7h0; rb = 7h0; rc = 7h4A; we = 1; sr = 3b0;
         
         debugSeg = 16h0002;
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           gameState.d = gameState.PLAY;
         }
       
@@ -173,22 +173,22 @@ module gameCU (
         }
       
       gameState.LEFT_CHECK_DEBUG:
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           gameState.d = gameState.LEFT_CHECK;
         }
       
       gameState.SHOOT_DEBUG:
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           gameState.d = gameState.SHOOT;
         }
       
       gameState.RIGHT_CHECK_DEBUG:
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           gameState.d = gameState.RIGHT_CHECK;
         }
       
       gameState.TIMER_CHECK_DEBUG:
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           gameState.d = gameState.TIMER_CHECK;
         }   
       
@@ -200,14 +200,14 @@ module gameCU (
         ra = 7h4A; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
 
         debugSeg = 16h0010;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.TIMER_BRANCH;
         }
       
       gameState.TIMER_BRANCH:
         // LOSE if time == 0, TIMER_DECREASE otherwise
         debugSeg = 16h0011;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           if (reg48 || (debugIn[0] && debugIn[1])) {
             gameState.d = gameState.LOSE;
           } else {
@@ -231,14 +231,14 @@ module gameCU (
         ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
         debugSeg = 16h0020;
         
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           gameState.d = gameState.LEFT_BRANCH;
         }
       
       gameState.LEFT_BRANCH:
         // PLAY if pos < 0, LEFT_REPOS otherwise
         debugSeg = 16h0021;
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           if (reg48 || (debugIn[0] && debugIn[4])) {
             gameState.d = gameState.PLAY;
           } else {
@@ -252,7 +252,7 @@ module gameCU (
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
         
         debugSeg = 16h0022;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.RESET_BOMBS;
         }
       
@@ -262,14 +262,14 @@ module gameCU (
         ra = 7h56; rb = 7h00; rc = 7h48; we = 1; sr = 3b0;
         
         debugSeg = 16h0023;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.RIGHT_BRANCH;
         }
       
       gameState.RIGHT_BRANCH:
         // RIGHT_REPOS if pos < 7, PLAY otherwise
         debugSeg = 16h0024;
-        if (game_timer_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1) {
           if (reg48 || (debugIn[0] && debugIn[5])) {
             gameState.d = gameState.RIGHT_REPOS;
           } else {
@@ -283,7 +283,7 @@ module gameCU (
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
         
         debugSeg = 16h0025;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.RESET_BOMBS;
         }
       
@@ -293,7 +293,7 @@ module gameCU (
         ra = 7h49; rb = 7h00; rc = 7h48; we = 1; sr = 0;
         
         debugSeg = 16h0026;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_AMMO;
         }
       
@@ -350,7 +350,7 @@ module gameCU (
         ra = 7h50; rb = 7h00; rc = 7h48; we = 1; sr = 0;
         
         debugSeg = 16h0030;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.COUNT_BOMBS;
         }
       
@@ -361,7 +361,7 @@ module gameCU (
         ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         
         debugSeg = 16h0031;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_BOMB_0;
         }
           
@@ -379,7 +379,7 @@ module gameCU (
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h01; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debugSeg = 16h0032;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_0;
           } else {
@@ -393,7 +393,7 @@ module gameCU (
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         
         debugSeg = 16h0033;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_BOMB_1;
         }
       
@@ -412,7 +412,7 @@ module gameCU (
         ra = 7h02; rb = 7h00; rc = 7h48; we = 0; sr = 0;
   
         debugSeg = 16h0034;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_1;
           } else {
@@ -426,7 +426,7 @@ module gameCU (
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         debugSeg = 16h0035;
         
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_BOMB_2;
         }
           
@@ -445,7 +445,7 @@ module gameCU (
         ra = 7h03; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debugSeg = 16h0036;
         
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_2;
           } else {
@@ -459,7 +459,7 @@ module gameCU (
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         
         debugSeg = 16h0037;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_BOMB_3;
         }
         
@@ -471,7 +471,7 @@ module gameCU (
         ra = 7h04; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         
         debugSeg = 16h0038;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_3;
           } else {
@@ -485,7 +485,7 @@ module gameCU (
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         
         debugSeg = 16h0039;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_BOMB_4;
         }
           
@@ -496,7 +496,7 @@ module gameCU (
         ra = 7h05; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           
         debugSeg = 16h0040;  
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_4;
           } else {
@@ -510,7 +510,7 @@ module gameCU (
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
       
         debugSeg = 16h0041;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_BOMB_5;
         }
         
@@ -520,7 +520,7 @@ module gameCU (
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h06; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debugSeg = 16h0042;
-        if (game_timer_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_5;
           } else {
@@ -568,8 +568,11 @@ module gameCU (
         //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.UPDATE_LIVES;
         debugSeg = 16h0047;
+
+        if (slow_clock_edge_detector == 1){
+          gameState.d = gameState.UPDATE_LIVES;
+        }
         
         
       /// ***** UPDATE LIVES ***** ///
