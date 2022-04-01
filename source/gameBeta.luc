@@ -3,7 +3,8 @@ module gameBeta (
     input rst,        // reset
     input buttons[3], // button input, 0-2 left to right
     input debugIn[16],// debug inputs to trigger game states
-    output debug[16]
+    output debugSeg[16],
+    output debugLed[16]
   ) {
   
   gameAlu alu;
@@ -44,6 +45,7 @@ module gameBeta (
     alu.alufn = cu.alufn;
     
     // DEBUG
-    debug = cu.debug;
+    debugSeg = cu.debugSeg;
+    debugLed = cu.debugLed;
   }
 }
