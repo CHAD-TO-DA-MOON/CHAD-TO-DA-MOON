@@ -533,7 +533,7 @@ module gameCU (
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_6;
-        debug = 16h0043;
+        debugSeg = 16h0043;
         
         
       /// ********* 6 ********** ///
@@ -660,7 +660,7 @@ module gameCU (
         }
         debugSeg = 16h0070;
         
-        
+          
       gameState.LOSE:
         ioState = 4h3;
         if (buttons[0] || buttons[1] || buttons[2]) {
