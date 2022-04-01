@@ -102,8 +102,7 @@ module gameCU (
       gameState.d = gameState.IDLE;
     }
 
-      /// ********* GAME STATE MACHINE ********** ///
-  
+    /// ********* GAME STATE MACHINE ********** ///
     case(gameState.q) {
       gameState.IDLE:
         if (buttons[0] || buttons[1] || buttons[2]) {
@@ -414,13 +413,15 @@ module gameCU (
         alufn = b100011; bsel = 0; c = 0;  
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
         debug = 16h0051;
+        
+        gameState.d = gameState.ALIVE_BRANCH;
 
       gameState.ALIVE_BRANCH:
-        // branch to Lose if player life is 0 and check game ends
+        // LOSE if player_life < 0, UPDATE_BOARD otherwise
         if (reg48) {
-          gameState.d = gameState.UPDATE_BOARD;
-        } else {
           gameState.d = gameState.LOSE;
+        } else {
+          gameState.d = gameState.UPDATE_BOARD;
         }
         debug = 16h0052;
        
@@ -450,9 +451,9 @@ module gameCU (
       gameState.UPDATE_ROWS:
         alufn = 6b0; bsel = 0; c = 1;
         ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
-        
-        gameState.d = gameState.READ_LEVELS;
         debug = 16h0062;
+                
+        gameState.d = gameState.READ_LEVELS;
       
       // Read levels from ROM, may not be needed if implemented in regfile (sr=1)
       // TODO: Not too sure about this. need to check with @ruien
