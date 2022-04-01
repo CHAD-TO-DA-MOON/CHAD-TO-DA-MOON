@@ -85,7 +85,10 @@ module gameCU (
       RESET,
       LINES_CHECK, // Check if the lines are 0
       DECREMENT_ROW,
-      UPDATE_ROWS // TODO : Need rom selector
+      UPDATE_ROWS, // TODO : Need rom selector
+
+      //DEBUG With Slow Clock
+      DEBUG_IDLE
     };
     
     .rst(rst) {
@@ -119,10 +122,14 @@ module gameCU (
           alufn = 6b0; bsel = 0; c = 16b1; 
           ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = b001;
           debug = 16h0001;
-        if (  game_timer_detector.out == 1){
+          gameState.d = gameState.DEBUG_IDLE;
+         }
+
+      gameState.DEBUG_IDLE :
+        if ( game_timer_detector.out == 1){
           gameState.d = gameState.INIT_TIMER;
         }
-        }
+      
       
       gameState.INIT_TIMER:
         alufn = 6b000000; bsel = 0; c = 16b0; 
