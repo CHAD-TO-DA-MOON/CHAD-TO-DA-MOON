@@ -3,6 +3,7 @@ module gameCU (
     input rst,        // reset
     input buttons[3], // button input, 0-2 left to right
     input reg48[16],  // branching reg
+    input reg4B[16],
     input timerTick,  // 1 when timer should update (edge detector)
     input debugIn[16],// debug inputs to trigger game states
     
@@ -50,6 +51,13 @@ module gameCU (
       RIGHT_REPOS,
       
       SHOOT, // check ammo, shoot, remove bomb, decrement ammo
+      CHECK_AMMO,
+      DECREMENT_AMMO,
+      BOMB_CHECK_INCREMENT_INIT,
+      BOMB_CHECK_INCREMENT,
+      CHECK_FOR_BOMB_INIT,
+      CHECK_FOR_BOMB,
+      DELETE_BOMB,
       
       RESET_BOMBS,
       COUNT_BOMBS, // calculate bombs
@@ -123,7 +131,6 @@ module gameCU (
       gameState.d = gameState.IDLE;
     }
     
-    /// ********* GAME STATE MACHINE ********** ///
     case(gameState.q) {
       gameState.IDLE:
         if (buttons[0] || buttons[1] || buttons[2]) {
@@ -183,7 +190,8 @@ module gameCU (
         if (game_timer_detector.out == 1){
           gameState.d = gameState.TIMER_CHECK;
         }
-      
+        
+        debug = 16h0003;
       
       
       /// ********* TIMER ********** ///
@@ -257,6 +265,7 @@ module gameCU (
         if (game_timer_detector.out == 1){
           gameState.d = gameState.LEFT_REPOS;
         }
+        debug = 16h0021;
       
       
       gameState.LEFT_REPOS:
@@ -295,6 +304,7 @@ module gameCU (
         if (game_timer_detector.out == 1){
           gameState.d = gameState.RIGHT_REPOS;
         }
+        debug = 16h0024;
       
       
       gameState.RIGHT_REPOS:
@@ -313,6 +323,60 @@ module gameCU (
         if (game_timer_detector.out == 1){
           gameState.d = gameState.RESET_BOMBS;
         }
+        
+        alufn = b100101; bsel = 1; c = 0;
+        // CMPLE
+        ra = 7h49; rb = 7h00; rc = 7h48; we = 1; sr = 0;
+        debug = 16h0026;
+        gameState.d = gameState.CHECK_AMMO;
+      
+      gameState.CHECK_AMMO:
+        if (reg48) {
+          gameState.d = gameState.RESET_BOMBS;
+        } else {
+          gameState.d = gameState.BOMB_CHECK_INCREMENT_INIT;
+          // SUB
+          alufn = b000001; bsel = 1; c = 1;
+          ra = 7h49; rb = 7h00; rc = 7h49; we = 1; sr = 0;
+        }
+      
+      gameState.BOMB_CHECK_INCREMENT_INIT:
+        //ADD
+        alufn = b100000; bsel = 1; c = 3b100;
+        ra = 7h56; rb = 7h00; rc = 7h4B;
+        gameState.d = gameState.CHECK_FOR_BOMB_INIT;
+      
+      
+      gameState.CHECK_FOR_BOMB_INIT:
+        //CMPEQ
+        alufn = b100001; bsel = 1; c = 1;
+        ra = 7h4B; rb = 7h00; rc = 7h48;
+        gameState.d = gameState.CHECK_FOR_BOMB;
+      
+      
+      gameState.BOMB_CHECK_INCREMENT:
+        //ADD
+        alufn = b100000; bsel = 1; c = 3b100;
+        ra = 7h4B; rb = 7h00; rc = 7h4B;
+        if (reg4B < 7h72){
+          gameState.d = gameState.CHECK_FOR_BOMB;
+        } else {
+          gameState.d = gameState.RESET_BOMBS;
+        }
+      
+      gameState.CHECK_FOR_BOMB:
+        if (reg48) {
+          gameState.d = gameState.DELETE_BOMB;
+        } else {
+          gameState.d = gameState.BOMB_CHECK_INCREMENT;
+        }
+      
+      
+      gameState.DELETE_BOMB:
+        //SUB
+        alufn =   b000001; bsel = 1; c = 1;
+        ra = 7h4B; rb = 7h00; rc = 7h4B;
+        gameState.d = gameState.RESET_BOMBS;
       
       
       /// ***** COUNT BOMBS ***** ///
@@ -336,294 +400,325 @@ module gameCU (
         if (game_timer_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_BOMB_0;
         }
-        
-        
-        /// ********* 0 ********** ///
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h01; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debug = 16h0032;
-      gameState.CHECK_POSITION_BOMB_0:
-        if (game_timer_detector.out == 1){
+          
+          
+          /// ********* 0 ********** ///
+          gameState.CHECK_POSITION_BOMB_0:
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_0;
           } else {
             gameState.d = gameState.CHECK_POSITION_BOMB_1;
-          } }
-      
-      
-      gameState.INCREMENT_BOMB_0:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        debug = 16h0033;
-        if (game_timer_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_1;
-        }
-      
-      /// ********* 1 ********** ///
-      gameState.CHECK_POSITION_BOMB_1:
-        
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h02; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debug = 16h0034;
-        
-        if (game_timer_detector.out == 1){
+          }
+          
+          
+          /// ********* 0 ********** ///
+          
+          gameState.CHECK_POSITION_BOMB_0:
+          //CMPEQ
+          alufn = b100001; bsel = 1; c = 1;
+          ra = 7h01; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+          debug = 16h0032;
+          if (game_timer_detector.out == 1){
+            if (reg48) {
+              gameState.d = gameState.INCREMENT_BOMB_0;
+            } else {
+              gameState.d = gameState.CHECK_POSITION_BOMB_1;
+            } }
+          
+          
+          gameState.INCREMENT_BOMB_0:
+          //ADD
+          alufn = b000000; bsel = 1; c = 1;
+          ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
+          debug = 16h0033;
+          if (game_timer_detector.out == 1){
+            gameState.d = gameState.CHECK_POSITION_BOMB_1;
+          }
+          /// ********* 1 ********** ///
+          gameState.CHECK_POSITION_BOMB_1:
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_1;
           } else {
             gameState.d = gameState.CHECK_POSITION_BOMB_2;
           }
-        }
-      
-      gameState.INCREMENT_BOMB_1:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        debug = 16h0035;
-        
-        if (game_timer_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_2;
-        }
-      
-      
-      /// ********* 2 ********** ///
-      gameState.CHECK_POSITION_BOMB_2:
-        
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h03; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debug = 16h0036;
-        
-        if (game_timer_detector.out == 1){
+          
+          /// ********* 1 ********** ///
+          gameState.CHECK_POSITION_BOMB_1:
+          
+          //CMPEQ
+          alufn = b100001; bsel = 1; c = 1;
+          ra = 7h02; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+          debug = 16h0034;
+          
+          if (game_timer_detector.out == 1){
+            if (reg48) {
+              gameState.d = gameState.INCREMENT_BOMB_1;
+            } else {
+              gameState.d = gameState.CHECK_POSITION_BOMB_2;
+            }
+          }
+          
+          gameState.INCREMENT_BOMB_1:
+          //ADD
+          alufn = b000000; bsel = 1; c = 1;
+          ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
+          debug = 16h0035;
+          
+          if (game_timer_detector.out == 1){
+            gameState.d = gameState.CHECK_POSITION_BOMB_2;
+          }
+          
+          /// ********* 2 ********** ///
+          gameState.CHECK_POSITION_BOMB_2:
           if (reg48) {
             gameState.d = gameState.INCREMENT_BOMB_2;
           } else {
             gameState.d = gameState.CHECK_POSITION_BOMB_3;
           }
-        }
-      
-      
-      gameState.INCREMENT_BOMB_2:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        debug = 16h0037;
-        
-        if (game_timer_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_3;
-        }
-      
-      
-      /// ********* 3 ********** ///
-      gameState.CHECK_POSITION_BOMB_3:
-        
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h04; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debug = 16h0038;
-        
-        if (game_timer_detector.out == 1){
-          if (reg48) {
-            gameState.d = gameState.INCREMENT_BOMB_3;
-          } else {
-            gameState.d = gameState.CHECK_POSITION_BOMB_4;
-          }   }
-      
-      gameState.INCREMENT_BOMB_3:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        debug = 16h0039;
-        
-        if (game_timer_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_4;
-        }
-      
-      
-      /// ********* 4 ********** ///
-      gameState.CHECK_POSITION_BOMB_4:
-        
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h05; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debug = 16h0040;
-
-        if (game_timer_detector.out == 1){
-if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_4;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_5;
-        }        }
-      
-      
-      gameState.INCREMENT_BOMB_4:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        debug = 16h0041;
-        
-        
-        if (game_timer_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_5;
-        }
-        
-        
-        
-        /// ********* 5 ********** ///
-      
-      gameState.CHECK_POSITION_BOMB_5:
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h06; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debug = 16h0042;
-        if (game_timer_detector.out == 1){
-          if (reg48) {
-            gameState.d = gameState.INCREMENT_BOMB_5;
-          } else {
-            gameState.d = gameState.CHECK_POSITION_BOMB_6;
+          
+          
+          /// ********* 2 ********** ///
+          gameState.CHECK_POSITION_BOMB_2:
+          
+          //CMPEQ
+          alufn = b100001; bsel = 1; c = 1;
+          ra = 7h03; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+          debug = 16h0036;
+          
+          if (game_timer_detector.out == 1){
+            if (reg48) {
+              gameState.d = gameState.INCREMENT_BOMB_2;
+            } else {
+              gameState.d = gameState.CHECK_POSITION_BOMB_3;
+            }
           }
+          
+          
+          gameState.INCREMENT_BOMB_2:
+          //ADD
+          alufn = b000000; bsel = 1; c = 1;
+          ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
+          debug = 16h0037;
+          
+          if (game_timer_detector.out == 1){
+            gameState.d = gameState.CHECK_POSITION_BOMB_3;
+          }
+          
+          
+          /// ********* 3 ********** ///
+          gameState.CHECK_POSITION_BOMB_3:
+          //CMPEQ
+          alufn = b100001; bsel = 1; c = 1;
+          ra = 7h04; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+          debug = 16h0038;
+          
+          if (game_timer_detector.out == 1){
+            if (reg48) {
+              gameState.d = gameState.INCREMENT_BOMB_3;
+            } else {
+              gameState.d = gameState.CHECK_POSITION_BOMB_4;
+            }   }
+          
+          gameState.INCREMENT_BOMB_3:
+          //ADD
+          alufn = b000000; bsel = 1; c = 1;
+          ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
+          debug = 16h0039;
+          
+          if (game_timer_detector.out == 1){
+            gameState.d = gameState.CHECK_POSITION_BOMB_4;
+          }
+          
+          
+          /// ********* 4 ********** ///
+          gameState.CHECK_POSITION_BOMB_4:
+          
+          //CMPEQ
+          alufn = b100001; bsel = 1; c = 1;
+          ra = 7h05; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+          debug = 16h0040;
+          
+          if (game_timer_detector.out == 1){
+            if (reg48) {
+              gameState.d = gameState.INCREMENT_BOMB_4;
+            } else {
+              gameState.d = gameState.CHECK_POSITION_BOMB_5;
+            }        }
+          
+          
+          gameState.INCREMENT_BOMB_4:
+          //ADD
+          alufn = b000000; bsel = 1; c = 1;
+          ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
+          debug = 16h0041;
+          
+          
+          if (game_timer_detector.out == 1){
+            gameState.d = gameState.CHECK_POSITION_BOMB_5;
+          }
+            
+            
+            
+            
+            /// ********* 5 ********** ///
+            
+            gameState.CHECK_POSITION_BOMB_5:
+            //CMPEQ
+            alufn = b100001; bsel = 1; c = 1;
+            ra = 7h06; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+            debug = 16h0042;
+            if (game_timer_detector.out == 1){
+              if (reg48) {
+                gameState.d = gameState.INCREMENT_BOMB_5;
+              } else {
+                gameState.d = gameState.CHECK_POSITION_BOMB_6;
+              }
+            }
+            
+            gameState.INCREMENT_BOMB_5:
+            //ADD
+            alufn = b000000; bsel = 1; c = 1;
+            ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
+            gameState.d = gameState.CHECK_POSITION_BOMB_6;
+            debug = 16h0043;
+            
+            
+            /// ********* 6 ********** ///
+            gameState.CHECK_POSITION_BOMB_6:
+            if (reg48) {
+              gameState.d = gameState.INCREMENT_BOMB_6;
+            } else {
+              gameState.d = gameState.CHECK_POSITION_BOMB_7;
+            }
+            //CMPEQ
+            alufn = b100001; bsel = 1; c = 1;
+            ra = 7h07; rb = 7h00; rc = 7h48; we = 0; sr = 0;
+            debug = 16h0044;
+            
+            
+            gameState.INCREMENT_BOMB_6:
+            //ADD
+            alufn = b000000; bsel = 1; c = 1;
+            ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
+            gameState.d = gameState.CHECK_POSITION_BOMB_7;
+            debug = 16h0045;
+            
+            /// ********* 7 ********** ///
+            gameState.CHECK_POSITION_BOMB_7:
+            if (reg48) {
+              gameState.d = gameState.INCREMENT_BOMB_7;
+            } else {
+              gameState.d = gameState.UPDATE_LIVES;
+            }
+            debug = 16h0046;
+            
+            gameState.INCREMENT_BOMB_7:
+            //ADD
+            alufn = b000000; bsel = 1; c = 1;
+            ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
+            gameState.d = gameState.UPDATE_LIVES;
+            debug = 16h0047;
+            
+            
+            /// ***** UPDATE LIVES ***** ///
+            gameState.UPDATE_LIVES:
+            // SUB : Decrement player life by bomb counter
+            alufn = b000001; bsel = 0; c = 0;  // SUB
+            ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
+            gameState.d = gameState.CHECK_PLAYER_LIVES;
+            debug = 16h0050;
+            
+            gameState.CHECK_PLAYER_LIVES:
+            // CMPLT
+            alufn = b100011; bsel = 0; c = 0;
+            ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
+            debug = 16h0051;
+            
+            gameState.d = gameState.ALIVE_BRANCH;
+            
+            gameState.ALIVE_BRANCH:
+            // LOSE if player_life < 0, UPDATE_BOARD otherwise
+            if (reg48 || (debugIn[0] && debugIn[2])) {
+              gameState.d = gameState.LOSE;
+            } else {
+              gameState.d = gameState.UPDATE_BOARD;
+            }
+            debug = 16h0052;
+            
+            
+            /// ********* BOARD UPDATE ********** ///
+            
+            // Check whether game ends before updating the board
+            gameState.UPDATE_BOARD:
+            // CMPEQ: lines_left == 0
+            alufn = b100001; bsel = 0; c = 16b0;
+            ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
+            debug = 16h0060;
+            
+            gameState.d = gameState.UPDATE_BOARD_BRANCH;
+            
+            // Check if game is over or the rows is needed to be moved down
+            gameState.UPDATE_BOARD_BRANCH:
+            // lines_left == 0 win; update rows otherwise
+            if (reg48 || (debugIn[0] && debugIn[3])) {
+              gameState.d = gameState.WIN;
+            } else {
+              gameState.d = gameState.UPDATE_ROWS;
+            }
+            
+            debug = 16h0061;
+            
+            // Move rows down by 1
+            gameState.UPDATE_ROWS:
+            alufn = 6b0; bsel = 0; c = 1;
+            ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
+            debug = 16h0062;
+            
+            gameState.d = gameState.DECREMENT_ROW;
+            
+            // Read levels from ROM, may not be needed if implemented in regfile (sr=1)
+            // TODO: Not too sure about this. need to check with @ruien
+            // gameState.READ_LEVELS:
+            // LD Reg[0x00 : 0x07] �?
+            // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
+            // alufn = b000000; bsel = 1; c = 1;
+            // ra = addr of rom_sel
+            // c = 1; we = 1; sr = 0;
+            // gameState.d = gameState.DECREMENT_ROW;
+            
+            // LD Reg[0x00 : 0x07] �?
+            // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
+            // alufn = b000000; bsel = 1; c = 1;
+            // ra = addr of rom_sel
+            // c = 1; we = 1; sr = 0;
+            // gameState.d = gameState.DECREMENT_ROW;
+            
+            // State to move the rows down
+            gameState.DECREMENT_ROW:
+            // SUB : lines_left = lines_left - 1
+            alufn = b000001; bsel = 0; c = 16b0;
+            ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 3b0;
+            debug = 16b0;
+            gameState.d = gameState.PLAY; // Game state to wait for input from player
+            debug = 16h0063;
+            
+            /// ********* END GAME ********** ///
+            gameState.WIN:
+            ioState = 4h2;
+            if (buttons[0] || buttons[1] || buttons[2]) {
+              gameState.d = gameState.IDLE;
+            }
+            debug = 16h0070;
+            
+            
+            gameState.LOSE:
+            ioState = 4h3;
+            if (buttons[0] || buttons[1] || buttons[2]) {
+              gameState.d = gameState.IDLE;
+            }
+            debug = 16h0071;
+            
+          }
+          
         }
-      
-      gameState.INCREMENT_BOMB_5:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_6;
-        debug = 16h0043;
-      
-      
-      
-      
-      /// ********* 6 ********** ///
-      gameState.CHECK_POSITION_BOMB_6:
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_6;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_7;
-        }
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h07; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debug = 16h0044;
-      
-      
-      gameState.INCREMENT_BOMB_6:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_7;
-        debug = 16h0045;
-      
-      /// ********* 7 ********** ///
-      gameState.CHECK_POSITION_BOMB_7:
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_7;
-        } else {
-          gameState.d = gameState.UPDATE_LIVES;
-        }
-        debug = 16h0046;
-      
-      gameState.INCREMENT_BOMB_7:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.UPDATE_LIVES;
-        debug = 16h0047;
-      
-      
-      /// ***** UPDATE LIVES ***** ///
-      gameState.UPDATE_LIVES:
-        // SUB : Decrement player life by bomb counter
-        alufn = b000001; bsel = 0; c = 0;  // SUB
-        ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_PLAYER_LIVES;
-        debug = 16h0050;
-      
-      gameState.CHECK_PLAYER_LIVES:
-        // CMPLT
-        alufn = b100011; bsel = 0; c = 0;
-        ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        debug = 16h0051;
-        
-        gameState.d = gameState.ALIVE_BRANCH;
-      
-      gameState.ALIVE_BRANCH:
-        // LOSE if player_life < 0, UPDATE_BOARD otherwise
-        if (reg48 || (debugIn[0] && debugIn[2])) {
-          gameState.d = gameState.LOSE;
-        } else {
-          gameState.d = gameState.UPDATE_BOARD;
-        }
-        debug = 16h0052;
-      
-      
-      /// ********* BOARD UPDATE ********** ///
-      
-      // Check whether game ends before updating the board
-      gameState.UPDATE_BOARD:
-        // CMPEQ: lines_left == 0
-        alufn = b100001; bsel = 0; c = 16b0;
-        ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        debug = 16h0060;
-        
-        gameState.d = gameState.UPDATE_BOARD_BRANCH;
-      
-      // Check if game is over or the rows is needed to be moved down
-      gameState.UPDATE_BOARD_BRANCH:
-        // lines_left == 0 win; update rows otherwise
-        if (reg48 || (debugIn[0] && debugIn[3])) {
-          gameState.d = gameState.WIN;
-        } else {
-          gameState.d = gameState.UPDATE_ROWS;
-        }
-        debug = 16h0061;
-      
-      // Move rows down by 1
-      gameState.UPDATE_ROWS:
-        alufn = 6b0; bsel = 0; c = 1;
-        ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
-        debug = 16h0062;
-        
-        gameState.d = gameState.DECREMENT_ROW;
-      
-      // Read levels from ROM, may not be needed if implemented in regfile (sr=1)
-      // TODO: Not too sure about this. need to check with @ruien
-      // gameState.READ_LEVELS:
-      // LD Reg[0x00 : 0x07] �?
-      // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
-      // alufn = b000000; bsel = 1; c = 1;
-      // ra = addr of rom_sel
-      // c = 1; we = 1; sr = 0;
-      // gameState.d = gameState.DECREMENT_ROW;
-      
-      // State to move the rows down
-      gameState.DECREMENT_ROW:
-        // SUB : lines_left = lines_left - 1
-        alufn = b000001; bsel = 0; c = 16b0;
-        ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 3b0;
-        debug = 16b0;
-        gameState.d = gameState.PLAY; // Game state to wait for input from player
-        debug = 16h0063;
-      
-      /// ********* END GAME ********** ///
-      gameState.WIN:
-        ioState = 4h2;
-        if (buttons[0] || buttons[1] || buttons[2]) {
-          gameState.d = gameState.IDLE;
-        }
-        debug = 16h0070;
-      
-      
-      gameState.LOSE:
-        ioState = 4h3;
-        if (buttons[0] || buttons[1] || buttons[2]) {
-          gameState.d = gameState.IDLE;
-        }
-        debug = 16h0071;
-      
-    }
-    
   }
-}

@@ -26,6 +26,7 @@ module gameBeta (
     // CU - bootstrap branching reg to CU
     cu.buttons = buttons;    
     cu.reg48 = 0; // placeholder for reg[0x48]
+    cu.reg4B = 0; // placeholder for reg[0x48]
     cu.debugIn = debugIn;
     
     // REGFILE
