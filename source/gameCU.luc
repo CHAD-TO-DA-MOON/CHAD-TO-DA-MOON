@@ -76,7 +76,7 @@ module gameCU (
       // Board Update
       UPDATE_BOARD,
       UPDATE_BOARD_BRANCH,
-      READ_LEVELS,
+      // READ_LEVELS,
       
       WIN, LOSE,
       RESET,
@@ -454,7 +454,7 @@ module gameCU (
         ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
         debug = 16h0062;
                 
-        gameState.d = gameState.READ_LEVELS;
+        gameState.d = gameState.DECREMENT_ROW;
       
       // Read levels from ROM, may not be needed if implemented in regfile (sr=1)
       // TODO: Not too sure about this. need to check with @ruien
@@ -465,7 +465,6 @@ module gameCU (
           // ra = addr of rom_sel
           // c = 1; we = 1; sr = 0;
           // gameState.d = gameState.DECREMENT_ROW;
-
 
       // State to move the rows down
       gameState.DECREMENT_ROW:
