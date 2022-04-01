@@ -4,6 +4,7 @@ module gameCU (
     input buttons[3], // button input, 0-2 left to right
     input reg48[16],  // branching reg
     input timerTick,  // 1 when timer should update (edge detector)
+    input debugIn[16],// debug inputs to trigger game states
     
     output alufn[6],  // define ALU op
     output bsel,      // 0 for OP, 1 for OPC
@@ -149,7 +150,7 @@ module gameCU (
       
       gameState.TIMER_BRANCH:
         // LOSE if time == 0, TIMER_DECREASE otherwise
-        if (reg48) {
+        if (reg48 || (debugIn[0] && debugIn[1])) {
           gameState.d = gameState.LOSE;
         } else {
           gameState.d = gameState.TIMER_DECREASE;
@@ -176,7 +177,7 @@ module gameCU (
       
       gameState.LEFT_BRANCH:
         // PLAY if pos < 0, LEFT_REPOS otherwise
-        if (reg48) {
+        if (reg48 || (debugIn[0] && debugIn[4])) {
           gameState.d = gameState.PLAY;
         } else {
           gameState.d = gameState.LEFT_REPOS;
@@ -202,7 +203,7 @@ module gameCU (
       
       gameState.RIGHT_BRANCH:
         // RIGHT_REPOS if pos < 7, PLAY otherwise
-        if (reg48) {
+        if (reg48 || (debugIn[0] && debugIn[5])) {
           gameState.d = gameState.RIGHT_REPOS;
         } else {
           gameState.d = gameState.PLAY;
@@ -418,7 +419,7 @@ module gameCU (
 
       gameState.ALIVE_BRANCH:
         // LOSE if player_life < 0, UPDATE_BOARD otherwise
-        if (reg48) {
+        if (reg48 || (debugIn[0] && debugIn[2])) {
           gameState.d = gameState.LOSE;
         } else {
           gameState.d = gameState.UPDATE_BOARD;
@@ -440,7 +441,7 @@ module gameCU (
       // Check if game is over or the rows is needed to be moved down
       gameState.UPDATE_BOARD_BRANCH:
         // lines_left == 0 win; update rows otherwise
-        if (reg48) {
+        if (reg48 || (debugIn[0] && debugIn[3])) {
           gameState.d = gameState.WIN;
         } else {
           gameState.d = gameState.UPDATE_ROWS;

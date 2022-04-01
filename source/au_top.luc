@@ -50,14 +50,17 @@ module au_top (
     beta.buttons[1] = buttondetector.out[2]; // center
     beta.buttons[2] = buttondetector.out[4]; // right
     
+    beta.debugIn[7:0] = io_dip[0];
+    beta.debugIn[15:8] = io_dip[1];
+    
     // 7segment
-    multiSeg.values = $build(16hFFFF,4);
+    multiSeg.values = $build(beta.debug, 4);
     io_seg = ~multiSeg.seg;
     io_sel = ~multiSeg.sel;
     
     // led_strip
     led_strip.update = 1; //sample write 
-    led_strip.color=LEDCOLOR[led_strip.pixel];
-    outled=led_strip.led;
+    led_strip.color = LEDCOLOR[led_strip.pixel];
+    outled = led_strip.led;
   }
 }
