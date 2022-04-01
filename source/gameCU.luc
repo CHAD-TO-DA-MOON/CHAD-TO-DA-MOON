@@ -28,6 +28,9 @@ module gameCU (
   // bsel and c can be simplified into one control signal
   
   .clk(clk) {
+
+    //Edge Detector
+    edge_detector game_timer_detector(#RISE(1), #FALL(0));
   
     fsm gameState(#INIT(IDLE)) = {
       IDLE, // await start game, initialise board
@@ -86,6 +89,8 @@ module gameCU (
     };
     
     .rst(rst) {
+      counter slow_timer(#SIZE(1),#DIV(26));  // Slow
+
       #INIT(0) {
       }
     }
@@ -98,7 +103,10 @@ module gameCU (
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 3b0;
     ioState = 4h0;
     debug = 16h0000;
-    
+
+    //edge detectors
+    game_timer_detector.in = slow_timer.value; // Put counter through edge detector
+
     if(rst) {
       gameState.d = gameState.IDLE;
     }
@@ -111,8 +119,9 @@ module gameCU (
           alufn = 6b0; bsel = 0; c = 16b1; 
           ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = b001;
           debug = 16h0001;
-          
+        if (  game_timer_detector.out == 1){
           gameState.d = gameState.INIT_TIMER;
+        }
         }
       
       gameState.INIT_TIMER:
@@ -120,7 +129,9 @@ module gameCU (
         ra = 7h0; rb = 7h0; rc = 7h4A; we = 1; sr = 3b0;
         debug = 16h0002;
         
-        gameState.d = gameState.PLAY;
+        if (  game_timer_detector.out == 1){
+          gameState.d = gameState.PLAY;
+        }
       
       gameState.PLAY:
         if (buttons[0]) {
