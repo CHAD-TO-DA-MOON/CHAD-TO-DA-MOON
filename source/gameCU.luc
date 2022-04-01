@@ -28,10 +28,10 @@ module gameCU (
   // bsel and c can be simplified into one control signal
   
   .clk(clk) {
-
+    
     //Edge Detector
     edge_detector game_timer_detector(#RISE(1), #FALL(0));
-  
+    
     fsm gameState(#INIT(IDLE)) = {
       IDLE, // await start game, initialise board
       INIT_TIMER, // start timer
@@ -68,7 +68,7 @@ module gameCU (
       INCREMENT_BOMB_4,
       INCREMENT_BOMB_5,
       INCREMENT_BOMB_6,
-      INCREMENT_BOMB_7,      
+      INCREMENT_BOMB_7,
       
       // Lives
       UPDATE_LIVES,
@@ -86,53 +86,62 @@ module gameCU (
       LINES_CHECK, // Check if the lines are 0
       DECREMENT_ROW,
       UPDATE_ROWS, // TODO : Need rom selector
-
+      
       //DEBUG With Slow Clock
-      DEBUG_IDLE
+      IDLE_DEBUG,
+      LEFT_CHECK_DEBUG,
+      SHOOT_DEBUG,
+      RIGHT_CHECK_DEBUG,
+      TIMER_CHECK_DEBUG,
+      LOSE_DEBUG,
+      TIMER_DECREASE_DEBUG,
+      PLAY_DEBUG,
+      LEFT_REPOS_DEBUG,
+      RIGHT_REPOS_DEBUG
     };
     
     .rst(rst) {
       counter slow_timer(#SIZE(1),#DIV(26));  // Slow
-
+      
       #INIT(0) {
       }
     }
     
   }
-
+  
   always {
     // default control signals
-    alufn = 6b0; bsel = 0; c = 16b0; 
+    alufn = 6b0; bsel = 0; c = 16b0;
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 3b0;
     ioState = 4h0;
     debug = 16h0000;
-
+    
     //edge detectors
     game_timer_detector.in = slow_timer.value; // Put counter through edge detector
-
+    
     if(rst) {
       gameState.d = gameState.IDLE;
     }
-
+    
     /// ********* GAME STATE MACHINE ********** ///
     case(gameState.q) {
       gameState.IDLE:
         if (buttons[0] || buttons[1] || buttons[2]) {
           // shift down by 1 row
-          alufn = 6b0; bsel = 0; c = 16b1; 
+          alufn = 6b0; bsel = 0; c = 16b1;
           ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = b001;
           debug = 16h0001;
-          gameState.d = gameState.DEBUG_IDLE;
-         }
-
-      gameState.DEBUG_IDLE :
+          gameState.d = gameState.IDLE_DEBUG;
+        }
+      
+      gameState.IDLE_DEBUG :
         if ( game_timer_detector.out == 1){
           gameState.d = gameState.INIT_TIMER;
         }
       
       
       gameState.INIT_TIMER:
-        alufn = 6b000000; bsel = 0; c = 16b0; 
+        alufn = 6b000000; bsel = 0; c = 16b0;
         ra = 7h0; rb = 7h0; rc = 7h4A; we = 1; sr = 3b0;
         debug = 16h0002;
         
@@ -141,20 +150,40 @@ module gameCU (
         }
       
       gameState.PLAY:
+        debug = 16h0003;
+        
         if (buttons[0]) {
-          gameState.d = gameState.LEFT_CHECK;
+          gameState.d = gameState.LEFT_CHECK_DEBUG;
         }
         else if (buttons[1]) {
-          gameState.d = gameState.SHOOT;
+          gameState.d = gameState.SHOOT_DEBUG;
         }
         else if (buttons[2]) {
-          gameState.d = gameState.RIGHT_CHECK;
-        } 
+          gameState.d = gameState.RIGHT_CHECK_DEBUG;
+        }
         else if (timerTick) {
+          gameState.d = gameState.TIMER_CHECK_DEBUG;
+        }
+      
+      gameState.LEFT_CHECK_DEBUG:
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.LEFT_CHECK;
+        }
+      
+      gameState.SHOOT_DEBUG:
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.SHOOT;
+        }
+      
+      gameState.RIGHT_CHECK_DEBUG:
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.RIGHT_CHECK;
+        }
+      gameState.TIMER_CHECK_DEBUG:
+        if (game_timer_detector.out == 1){
           gameState.d = gameState.TIMER_CHECK;
         }
-        debug = 16h0003;
-
+      
       
       
       /// ********* TIMER ********** ///
@@ -164,16 +193,29 @@ module gameCU (
         ra = 7h4A; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
         debug = 16h0010;
         
-        gameState.d = gameState.TIMER_BRANCH;
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.TIMER_BRANCH;
+        }
+      
       
       gameState.TIMER_BRANCH:
         // LOSE if time == 0, TIMER_DECREASE otherwise
         if (reg48 || (debugIn[0] && debugIn[1])) {
-          gameState.d = gameState.LOSE;
+          gameState.d = gameState.LOSE_DEBUG;
         } else {
-          gameState.d = gameState.TIMER_DECREASE;
+          gameState.d = gameState.TIMER_DECREASE_DEBUG;
         }
         debug = 16h0011;
+      
+      gameState.LOSE_DEBUG:
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.LOSE;
+        }
+      
+      gameState.TIMER_DECREASE_DEBUG:
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.TIMER_DECREASE;
+        }
       
       gameState.TIMER_DECREASE:
         // SUB: decrease timer by 1
@@ -191,25 +233,42 @@ module gameCU (
         ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
         debug = 16h0020;
         
-        gameState.d = gameState.LEFT_BRANCH;
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.LEFT_BRANCH;
+        }
+      
       
       gameState.LEFT_BRANCH:
         // PLAY if pos < 0, LEFT_REPOS otherwise
+        debug = 16h0021;
+        
         if (reg48 || (debugIn[0] && debugIn[4])) {
-          gameState.d = gameState.PLAY;
+          gameState.d = gameState.PLAY_DEBUG;
         } else {
+          gameState.d = gameState.LEFT_REPOS_DEBUG;
+        }
+      
+      gameState.PLAY_DEBUG:
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.PLAY;
+        }
+      
+      gameState.LEFT_REPOS_DEBUG:
+        if (game_timer_detector.out == 1){
           gameState.d = gameState.LEFT_REPOS;
         }
-        debug = 16h0021;
-
+      
       
       gameState.LEFT_REPOS:
         // SUB: move player left
-        alufn = b000001; bsel = 0; c = 16b0; 
+        alufn = b000001; bsel = 0; c = 16b0;
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
         debug = 16h0022;
         
-        gameState.d = gameState.RESET_BOMBS;
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.RESET_BOMBS;
+        }
+      
       
       gameState.RIGHT_CHECK:
         // CMPLEC: player pos < 7
@@ -217,173 +276,228 @@ module gameCU (
         ra = 7h56; rb = 7h00; rc = 7h48; we = 1; sr = 3b0;
         debug = 16h0023;
         
-        gameState.d = gameState.RIGHT_BRANCH;
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.RIGHT_BRANCH;
+        }
+      
       
       gameState.RIGHT_BRANCH:
         // RIGHT_REPOS if pos < 7, PLAY otherwise
-        if (reg48 || (debugIn[0] && debugIn[5])) {
-          gameState.d = gameState.RIGHT_REPOS;
-        } else {
-          gameState.d = gameState.PLAY;
-        }
         debug = 16h0024;
-
+        
+        if (reg48 || (debugIn[0] && debugIn[5])) {
+          gameState.d = gameState.RIGHT_REPOS_DEBUG;
+        } else {
+          gameState.d = gameState.PLAY_DEBUG;
+        }
+      
+      gameState.RIGHT_REPOS_DEBUG:
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.RIGHT_REPOS;
+        }
+      
       
       gameState.RIGHT_REPOS:
         // ADD: move player right
-        alufn = b000000; bsel = 0; c = 16b0; 
+        alufn = b000000; bsel = 0; c = 16b0;
         ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
         debug = 16h0025;
         
-        gameState.d = gameState.RESET_BOMBS;
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.RESET_BOMBS;
+        }
       
       gameState.SHOOT: //TODO : Not done yet. Might need to decrease ammo counter
-        gameState.d = gameState.RESET_BOMBS;
         debug = 16h0026;
-
         
-      /// ***** COUNT BOMBS ***** ///  
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.RESET_BOMBS;
+        }
+      
+      
+      /// ***** COUNT BOMBS ***** ///
       gameState.RESET_BOMBS:
-        // 'A' boolean operation 
+        // 'A' boolean operation
         alufn = b010011; bsel = 1; c = 0;
         ra = 7h50; rb = 7h00; rc = 7h48; we = 1; sr = 0;
-        gameState.d = gameState.COUNT_BOMBS;
         debug = 16h0030;
-
         
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.COUNT_BOMBS;
+        }
+      
+      
       gameState.COUNT_BOMBS:
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_0;
         debug = 16h0031;
-
-     
-      /// ********* 0 ********** ///
-      gameState.CHECK_POSITION_BOMB_0:               
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_0;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_1;
+        
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.CHECK_POSITION_BOMB_0;
         }
+        
+        
+        /// ********* 0 ********** ///
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h01; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debug = 16h0032;
-
-          
+      gameState.CHECK_POSITION_BOMB_0:
+        if (game_timer_detector.out == 1){
+          if (reg48) {
+            gameState.d = gameState.INCREMENT_BOMB_0;
+          } else {
+            gameState.d = gameState.CHECK_POSITION_BOMB_1;
+          } }
+      
+      
       gameState.INCREMENT_BOMB_0:
         //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_1;
         debug = 16h0033;
-        
-      /// ********* 1 ********** ///
-      gameState.CHECK_POSITION_BOMB_1:               
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_1;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_2;
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.CHECK_POSITION_BOMB_1;
         }
+      
+      /// ********* 1 ********** ///
+      gameState.CHECK_POSITION_BOMB_1:
+        
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h02; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debug = 16h0034;
-          
+        
+        if (game_timer_detector.out == 1){
+          if (reg48) {
+            gameState.d = gameState.INCREMENT_BOMB_1;
+          } else {
+            gameState.d = gameState.CHECK_POSITION_BOMB_2;
+          }
+        }
+      
       gameState.INCREMENT_BOMB_1:
         //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_2;
         debug = 16h0035;
-
-
-      /// ********* 2 ********** ///
-      gameState.CHECK_POSITION_BOMB_2:               
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_2;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_3;
+        
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.CHECK_POSITION_BOMB_2;
         }
+      
+      
+      /// ********* 2 ********** ///
+      gameState.CHECK_POSITION_BOMB_2:
+        
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h03; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debug = 16h0036;
-
-
+        
+        if (game_timer_detector.out == 1){
+          if (reg48) {
+            gameState.d = gameState.INCREMENT_BOMB_2;
+          } else {
+            gameState.d = gameState.CHECK_POSITION_BOMB_3;
+          }
+        }
+      
+      
       gameState.INCREMENT_BOMB_2:
-        //ADD  
+        //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_3;
         debug = 16h0037;
-      
-
-      /// ********* 3 ********** ///
-      gameState.CHECK_POSITION_BOMB_3:               
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_3;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_4;
+        
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.CHECK_POSITION_BOMB_3;
         }
+      
+      
+      /// ********* 3 ********** ///
+      gameState.CHECK_POSITION_BOMB_3:
+        
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h04; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debug = 16h0038;
-
-          
+        
+        if (game_timer_detector.out == 1){
+          if (reg48) {
+            gameState.d = gameState.INCREMENT_BOMB_3;
+          } else {
+            gameState.d = gameState.CHECK_POSITION_BOMB_4;
+          }   }
+      
       gameState.INCREMENT_BOMB_3:
-        //ADD  
+        //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_4;
         debug = 16h0039;
-
-
-      /// ********* 4 ********** ///
-      gameState.CHECK_POSITION_BOMB_4:               
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_4;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_5;
+        
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.CHECK_POSITION_BOMB_4;
         }
+      
+      
+      /// ********* 4 ********** ///
+      gameState.CHECK_POSITION_BOMB_4:
+        
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h05; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debug = 16h0040;
 
-        
+        if (game_timer_detector.out == 1){
+if (reg48) {
+          gameState.d = gameState.INCREMENT_BOMB_4;
+        } else {
+          gameState.d = gameState.CHECK_POSITION_BOMB_5;
+        }        }
+      
+      
       gameState.INCREMENT_BOMB_4:
-        //ADD  
+        //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_5;
         debug = 16h0041;
-
         
-      /// ********* 5 ********** ///
-      gameState.CHECK_POSITION_BOMB_5:               
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_5;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_6;
+        
+        if (game_timer_detector.out == 1){
+          gameState.d = gameState.CHECK_POSITION_BOMB_5;
         }
+        
+        
+        
+        /// ********* 5 ********** ///
+      
+      gameState.CHECK_POSITION_BOMB_5:
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h06; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debug = 16h0042;
-        
+        if (game_timer_detector.out == 1){
+          if (reg48) {
+            gameState.d = gameState.INCREMENT_BOMB_5;
+          } else {
+            gameState.d = gameState.CHECK_POSITION_BOMB_6;
+          }
+        }
+      
       gameState.INCREMENT_BOMB_5:
-        //ADD  
+        //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_6;
         debug = 16h0043;
-
+      
+      
+      
       
       /// ********* 6 ********** ///
-      gameState.CHECK_POSITION_BOMB_6:               
+      gameState.CHECK_POSITION_BOMB_6:
         if (reg48) {
           gameState.d = gameState.INCREMENT_BOMB_6;
         } else {
@@ -393,26 +507,26 @@ module gameCU (
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h07; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         debug = 16h0044;
-
-          
+      
+      
       gameState.INCREMENT_BOMB_6:
-        //ADD  
+        //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.CHECK_POSITION_BOMB_7;
         debug = 16h0045;
-       
+      
       /// ********* 7 ********** ///
-      gameState.CHECK_POSITION_BOMB_7:               
+      gameState.CHECK_POSITION_BOMB_7:
         if (reg48) {
           gameState.d = gameState.INCREMENT_BOMB_7;
         } else {
           gameState.d = gameState.UPDATE_LIVES;
         }
         debug = 16h0046;
-          
+      
       gameState.INCREMENT_BOMB_7:
-        //ADD  
+        //ADD
         alufn = b000000; bsel = 1; c = 1;
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         gameState.d = gameState.UPDATE_LIVES;
@@ -426,15 +540,15 @@ module gameCU (
         ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
         gameState.d = gameState.CHECK_PLAYER_LIVES;
         debug = 16h0050;
-            
+      
       gameState.CHECK_PLAYER_LIVES:
         // CMPLT
-        alufn = b100011; bsel = 0; c = 0;  
+        alufn = b100011; bsel = 0; c = 0;
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
         debug = 16h0051;
         
         gameState.d = gameState.ALIVE_BRANCH;
-
+      
       gameState.ALIVE_BRANCH:
         // LOSE if player_life < 0, UPDATE_BOARD otherwise
         if (reg48 || (debugIn[0] && debugIn[2])) {
@@ -443,17 +557,17 @@ module gameCU (
           gameState.d = gameState.UPDATE_BOARD;
         }
         debug = 16h0052;
-       
+      
       
       /// ********* BOARD UPDATE ********** ///
-
+      
       // Check whether game ends before updating the board
       gameState.UPDATE_BOARD:
         // CMPEQ: lines_left == 0
         alufn = b100001; bsel = 0; c = 16b0;
         ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
         debug = 16h0060;
-
+        
         gameState.d = gameState.UPDATE_BOARD_BRANCH;
       
       // Check if game is over or the rows is needed to be moved down
@@ -465,25 +579,25 @@ module gameCU (
           gameState.d = gameState.UPDATE_ROWS;
         }
         debug = 16h0061;
-
+      
       // Move rows down by 1
       gameState.UPDATE_ROWS:
         alufn = 6b0; bsel = 0; c = 1;
         ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
         debug = 16h0062;
-                
+        
         gameState.d = gameState.DECREMENT_ROW;
       
       // Read levels from ROM, may not be needed if implemented in regfile (sr=1)
       // TODO: Not too sure about this. need to check with @ruien
       // gameState.READ_LEVELS:
-          // LD Reg[0x00 : 0x07] �?
-          // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
-          // alufn = b000000; bsel = 1; c = 1;
-          // ra = addr of rom_sel
-          // c = 1; we = 1; sr = 0;
-          // gameState.d = gameState.DECREMENT_ROW;
-
+      // LD Reg[0x00 : 0x07] �?
+      // Mem[Reg[0x56] : Reg[0x56] + 2 x 8]
+      // alufn = b000000; bsel = 1; c = 1;
+      // ra = addr of rom_sel
+      // c = 1; we = 1; sr = 0;
+      // gameState.d = gameState.DECREMENT_ROW;
+      
       // State to move the rows down
       gameState.DECREMENT_ROW:
         // SUB : lines_left = lines_left - 1
@@ -491,7 +605,7 @@ module gameCU (
         ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 3b0;
         debug = 16b0;
         gameState.d = gameState.PLAY; // Game state to wait for input from player
-        debug = 16h0063;      
+        debug = 16h0063;
       
       /// ********* END GAME ********** ///
       gameState.WIN:
@@ -499,16 +613,16 @@ module gameCU (
         if (buttons[0] || buttons[1] || buttons[2]) {
           gameState.d = gameState.IDLE;
         }
-        debug = 16h0070;      
-
+        debug = 16h0070;
+      
       
       gameState.LOSE:
         ioState = 4h3;
         if (buttons[0] || buttons[1] || buttons[2]) {
           gameState.d = gameState.IDLE;
         }
-        debug = 16h0071;      
-
+        debug = 16h0071;
+      
     }
     
   }
