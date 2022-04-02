@@ -25,7 +25,7 @@ module gameCU (
   // TODOS
   // Add little time left (Timer)
   // Reduce states from branching (due to boostrapped reg48)
-  // Add shooting
+  // Add SHOOT_AMMO_CHECKing
   // bsel and c can be simplified into one control signal
   
   .clk(clk) {
@@ -50,13 +50,13 @@ module gameCU (
       RIGHT_BRANCH,
       RIGHT_REPOS,
       
-      SHOOT, // check ammo, shoot, remove bomb, decrement ammo
-      CHECK_AMMO,
+      SHOOT_AMMO_CHECK, // check ammo, SHOOT_AMMO_CHECK, remove bomb, decrement ammo
+      SHOOT_AMMO_BRANCH,
       DECREMENT_AMMO,
-      BOMB_CHECK_INCREMENT_INIT,
+      SHOOT_INIT_CHECK_POS,
       BOMB_CHECK_INCREMENT,
-      CHECK_FOR_BOMB_INIT,
-      CHECK_FOR_BOMB,
+      SHOOT_CHECK_HAS_BOMB,
+      SHOOT_BOMB_BRANCH,
       DELETE_BOMB,
       
       RESET_BOMBS,
@@ -98,14 +98,9 @@ module gameCU (
       //DEBUG With Slow Clock
       IDLE_DEBUG,
       LEFT_CHECK_DEBUG,
-      SHOOT_DEBUG,
+      SHOOT_AMMO_CHECK_DEBUG,
       RIGHT_CHECK_DEBUG,
-      TIMER_CHECK_DEBUG,
-      LOSE_DEBUG,
-      TIMER_DECREASE_DEBUG,
-      PLAY_DEBUG,
-      LEFT_REPOS_DEBUG,
-      RIGHT_REPOS_DEBUG
+      TIMER_CHECK_DEBUG
     };
     
     .rst(rst) {
@@ -135,15 +130,12 @@ module gameCU (
           // shift down by 1 row
           alufn = 6b0; bsel = 0; c = 16b1;
           ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = b001;
-        }
-        
-        debugSeg = 16h0001;
-        if (slow_clock_edge_detector.out == 1) {
+          debugSeg = 16h0001;
           gameState.d = gameState.IDLE_DEBUG;
-        }
+        }       
       
       gameState.IDLE_DEBUG:
-        if (slow_clock_edge_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.INIT_TIMER;
         }
       
@@ -152,7 +144,7 @@ module gameCU (
         ra = 7h0; rb = 7h0; rc = 7h4A; we = 1; sr = 3b0;
         
         debugSeg = 16h0002;
-        if (slow_clock_edge_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.PLAY;
         }
       
@@ -163,35 +155,34 @@ module gameCU (
           gameState.d = gameState.LEFT_CHECK_DEBUG;
         }
         else if (buttons[1]) {
-          gameState.d = gameState.SHOOT_DEBUG;
+          gameState.d = gameState.SHOOT_AMMO_CHECK_DEBUG;
         }
         else if (buttons[2]) {
           gameState.d = gameState.RIGHT_CHECK_DEBUG;
         }
-        else if (timerTick) {
-          gameState.d = gameState.TIMER_CHECK_DEBUG;
-        }
+        // else if (timerTick) {
+        //   gameState.d = gameState.TIMER_CHECK_DEBUG;
+        // }
       
       gameState.LEFT_CHECK_DEBUG:
-        if (slow_clock_edge_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.LEFT_CHECK;
         }
       
-      gameState.SHOOT_DEBUG:
-        if (slow_clock_edge_detector.out == 1) {
-          gameState.d = gameState.SHOOT;
+      gameState.SHOOT_AMMO_CHECK_DEBUG:
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.SHOOT_AMMO_CHECK;
         }
       
       gameState.RIGHT_CHECK_DEBUG:
-        if (slow_clock_edge_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.RIGHT_CHECK;
         }
       
       gameState.TIMER_CHECK_DEBUG:
-        if (slow_clock_edge_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.TIMER_CHECK;
-        }   
-      
+        }
       
       /// ********* TIMER ********** ///
       gameState.TIMER_CHECK:
@@ -219,8 +210,8 @@ module gameCU (
         // SUB: decrease timer by 1
         alufn = b000001; bsel = 0; c = 16b0;
         ra = 7h4A; rb = 7h51; rc = 7h4A; we = 1; sr = 3b0;
-        debugSeg = 16h0012;
         
+        debugSeg = 16h0012;
         gameState.d = gameState.PLAY;
       
       
@@ -229,16 +220,16 @@ module gameCU (
         // CMPLT: player pos < 0
         alufn = b100011; bsel = 0; c = 16b0;
         ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
-        debugSeg = 16h0020;
         
-        if (slow_clock_edge_detector.out == 1) {
+        debugSeg = 16h0020;
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.LEFT_BRANCH;
         }
       
       gameState.LEFT_BRANCH:
         // PLAY if pos < 0, LEFT_REPOS otherwise
         debugSeg = 16h0021;
-        if (slow_clock_edge_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1){
           if (reg48 || (debugIn[0] && debugIn[4])) {
             gameState.d = gameState.PLAY;
           } else {
@@ -269,7 +260,7 @@ module gameCU (
       gameState.RIGHT_BRANCH:
         // RIGHT_REPOS if pos < 7, PLAY otherwise
         debugSeg = 16h0024;
-        if (slow_clock_edge_detector.out == 1) {
+        if (slow_clock_edge_detector.out == 1){
           if (reg48 || (debugIn[0] && debugIn[5])) {
             gameState.d = gameState.RIGHT_REPOS;
           } else {
@@ -287,58 +278,59 @@ module gameCU (
           gameState.d = gameState.RESET_BOMBS;
         }
       
-      gameState.SHOOT: //TODO : Not done yet. Might need to decrease ammo counter
+      gameState.SHOOT_AMMO_CHECK: //TODO : Not done yet. Might need to decrease ammo counter
         // CMPLE
         alufn = b100101; bsel = 1; c = 0;
         ra = 7h49; rb = 7h00; rc = 7h48; we = 1; sr = 0;
         
         debugSeg = 16h0026;
         if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.CHECK_AMMO;
+          gameState.d = gameState.SHOOT_AMMO_BRANCH;
         }
       
-      gameState.CHECK_AMMO:
+      gameState.SHOOT_AMMO_BRANCH:
         if (reg48) {
           gameState.d = gameState.RESET_BOMBS;
         } else {
           // SUB
           alufn = b000001; bsel = 1; c = 1;
           ra = 7h49; rb = 7h00; rc = 7h49; we = 1; sr = 0;
-          gameState.d = gameState.BOMB_CHECK_INCREMENT_INIT;
+          gameState.d = gameState.SHOOT_INIT_CHECK_POS;
         }
       
-      gameState.BOMB_CHECK_INCREMENT_INIT:
+      gameState.SHOOT_INIT_CHECK_POS:
         //ADD
-        alufn = b100000; bsel = 1; c = 3b100;
+        alufn = b100000; bsel = 0; c = 0;
         ra = 7h56; rb = 7h00; rc = 7h4B;
-        gameState.d = gameState.CHECK_FOR_BOMB_INIT;
+        gameState.d = gameState.SHOOT_CHECK_HAS_BOMB;
       
-      gameState.CHECK_FOR_BOMB_INIT:
-        //CMPEQ
+      gameState.SHOOT_CHECK_HAS_BOMB:
+        //CMPEQ: check position == 0
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h4B; rb = 7h00; rc = 7h48;
-        gameState.d = gameState.CHECK_FOR_BOMB;
+        gameState.d = gameState.SHOOT_BOMB_BRANCH;
       
-      gameState.BOMB_CHECK_INCREMENT:
-        //ADD
-        alufn = b100000; bsel = 1; c = 3b100;
-        ra = 7h4B; rb = 7h00; rc = 7h4B;
-        if (reg4B < 7h72){
-          gameState.d = gameState.CHECK_FOR_BOMB;
-        } else {
-          gameState.d = gameState.RESET_BOMBS;
-        }
-      
-      gameState.CHECK_FOR_BOMB:
+      gameState.SHOOT_BOMB_BRANCH:
+        // DELETE_BOMB if check position == 0; BOMB_CHECK_INCREMENT otherwise
         if (reg48) {
           gameState.d = gameState.DELETE_BOMB;
         } else {
           gameState.d = gameState.BOMB_CHECK_INCREMENT;
         }
       
+      gameState.BOMB_CHECK_INCREMENT:
+        //ADD
+        alufn = b100000; bsel = 1; c = 3b100;
+        ra = 7h4B; rb = 7h00; rc = 7h4B;
+        if (reg4B < 7h72){
+          gameState.d = gameState.SHOOT_BOMB_BRANCH;
+        } else {
+          gameState.d = gameState.RESET_BOMBS;
+        }
+      
       gameState.DELETE_BOMB:
         //SUB
-        alufn =   b000001; bsel = 1; c = 1;
+        alufn = b000001; bsel = 1; c = 1;
         ra = 7h4B; rb = 7h00; rc = 7h4B;
         gameState.d = gameState.RESET_BOMBS;
       
@@ -354,7 +346,6 @@ module gameCU (
           gameState.d = gameState.COUNT_BOMBS;
         }
       
-      
       gameState.COUNT_BOMBS:
         //CMPEQ
         alufn = b100001; bsel = 1; c = 1;
@@ -364,8 +355,7 @@ module gameCU (
         if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_BOMB_0;
         }
-          
-          
+      
       /// ********* 0 ********** ///
       gameState.CHECK_POSITION_BOMB_0:
         if (reg48) {
@@ -570,7 +560,7 @@ module gameCU (
         ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
         debugSeg = 16h0047;
 
-        if (slow_clock_edge_detector == 1){
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.UPDATE_LIVES;
         }
         
@@ -580,25 +570,32 @@ module gameCU (
         // SUB : Decrement player life by bomb counter
         alufn = b000001; bsel = 0; c = 0;  // SUB
         ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_PLAYER_LIVES;
+        
         debugSeg = 16h0050;
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.CHECK_PLAYER_LIVES;
+        }
             
       gameState.CHECK_PLAYER_LIVES:
         // CMPLT
         alufn = b100011; bsel = 0; c = 0;
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        debugSeg = 16h0051;
         
-        gameState.d = gameState.ALIVE_BRANCH;
+        debugSeg = 16h0051;
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.ALIVE_BRANCH;
+        }
         
       gameState.ALIVE_BRANCH:
         // LOSE if player_life < 0, UPDATE_BOARD otherwise
-        if (reg48 || (debugIn[0] && debugIn[2])) {
-          gameState.d = gameState.LOSE;
-        } else {
-          gameState.d = gameState.UPDATE_BOARD;
-        }
         debugSeg = 16h0052;
+        if (slow_clock_edge_detector.out == 1){
+          if (reg48 || (debugIn[0] && debugIn[2])) {
+            gameState.d = gameState.LOSE;
+          } else {
+            gameState.d = gameState.UPDATE_BOARD;
+          }
+        }
             
             
       /// ********* BOARD UPDATE ********** ///
@@ -607,28 +604,33 @@ module gameCU (
         // CMPEQ: lines_left == 0
         alufn = b100001; bsel = 0; c = 16b0;
         ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        debugSeg = 16h0060;
         
-        gameState.d = gameState.UPDATE_BOARD_BRANCH;
+        debugSeg = 16h0060;
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.UPDATE_BOARD_BRANCH;
+        }
         
       // Check if game is over or the rows is needed to be moved down
       gameState.UPDATE_BOARD_BRANCH:
         // lines_left == 0 win; update rows otherwise
-        if (reg48 || (debugIn[0] && debugIn[3])) {
-          gameState.d = gameState.WIN;
-        } else {
-          gameState.d = gameState.UPDATE_ROWS;
-        }
-        
         debugSeg = 16h0061;
+        if (slow_clock_edge_detector.out == 1){
+          if (reg48 || (debugIn[0] && debugIn[3])) {
+            gameState.d = gameState.WIN;
+          } else {
+            gameState.d = gameState.UPDATE_ROWS;
+          }
+        }
             
       // Move rows down by 1
       gameState.UPDATE_ROWS:
         alufn = 6b0; bsel = 0; c = 1;
         ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
-        debugSeg = 16h0062;
         
-        gameState.d = gameState.DECREMENT_ROW;
+        debugSeg = 16h0062;
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.DECREMENT_ROW;
+        }
             
       // Read levels from ROM, may not be needed if implemented in regfile (sr=1)
       // TODO: Not too sure about this. need to check with @ruien
@@ -650,10 +652,13 @@ module gameCU (
       // State to move the rows down
       gameState.DECREMENT_ROW:
         // SUB : lines_left = lines_left - 1
+        debugSeg = 16h0063;
         alufn = b000001; bsel = 0; c = 16b0;
         ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 3b0;
-        gameState.d = gameState.PLAY; // Game state to wait for input from player
-        debugSeg = 16h0063;
+        
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.PLAY; // Game state to wait for input from player
+        }
         
       /// ********* END GAME ********** ///
       gameState.WIN:
@@ -663,7 +668,6 @@ module gameCU (
         }
         debugSeg = 16h0070;
         
-          
       gameState.LOSE:
         ioState = 4h3;
         if (buttons[0] || buttons[1] || buttons[2]) {
