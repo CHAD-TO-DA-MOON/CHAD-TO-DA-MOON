@@ -61,22 +61,8 @@ module gameCU (
       
       RESET_BOMBS,
       COUNT_BOMBS, // calculate bombs
-      CHECK_POSITION_BOMB_0,
-      CHECK_POSITION_BOMB_1,
-      CHECK_POSITION_BOMB_2,
-      CHECK_POSITION_BOMB_3,
-      CHECK_POSITION_BOMB_4,
-      CHECK_POSITION_BOMB_5,
-      CHECK_POSITION_BOMB_6,
-      CHECK_POSITION_BOMB_7,
-      INCREMENT_BOMB_0,
-      INCREMENT_BOMB_1,
-      INCREMENT_BOMB_2,
-      INCREMENT_BOMB_3,
-      INCREMENT_BOMB_4,
-      INCREMENT_BOMB_5,
-      INCREMENT_BOMB_6,
-      INCREMENT_BOMB_7,
+      CHECK_POSITION_FOR_BOMB,
+      INCREMENT_POS,
       
       // Lives
       UPDATE_LIVES,
@@ -290,50 +276,74 @@ module gameCU (
         }
       
       gameState.SHOOT_AMMO_BRANCH:
-        if (reg48) {
+        debugSeg = 16h0027;
+        if ((reg48) && (slow_clock_edge_detector.out == 1)){
           gameState.d = gameState.RESET_BOMBS;
         } else {
           // SUB
           alufn = b000001; bsel = 1; c = 1;
           ra = 7h49; rb = 7h00; rc = 7h49; we = 1; sr = 0;
-          gameState.d = gameState.SHOOT_INIT_CHECK_POS;
+          if (slow_clock_edge_detector.out == 1){
+            gameState.d = gameState.SHOOT_INIT_CHECK_POS;
+          }
         }
       
       gameState.SHOOT_INIT_CHECK_POS:
         //ADD
         alufn = b100000; bsel = 0; c = 0;
         ra = 7h56; rb = 7h00; rc = 7h4B;
-        gameState.d = gameState.SHOOT_CHECK_HAS_BOMB;
+
+        debugSeg = 16h0028;
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.SHOOT_CHECK_HAS_BOMB;
+        }
       
       gameState.SHOOT_CHECK_HAS_BOMB:
         //CMPEQ: check position == 0
         alufn = b100001; bsel = 1; c = 1;
-        ra = 7h4B; rb = 7h00; rc = 7h48;
-        gameState.d = gameState.SHOOT_BOMB_BRANCH;
+        ra = reg4B; rb = 7h00; rc = 7h48;
+
+        debugSeg = 16h0029;
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.SHOOT_BOMB_BRANCH;
+        }
       
       gameState.SHOOT_BOMB_BRANCH:
         // DELETE_BOMB if check position == 0; BOMB_CHECK_INCREMENT otherwise
-        if (reg48) {
+        
+        debugSeg = 16h0030;
+
+        if ((reg48) && (slow_clock_edge_detector.out == 1)){
           gameState.d = gameState.DELETE_BOMB;
         } else {
-          gameState.d = gameState.BOMB_CHECK_INCREMENT;
+          if (slow_clock_edge_detector.out == 1){
+            gameState.d = gameState.BOMB_CHECK_INCREMENT;
+          }
         }
       
       gameState.BOMB_CHECK_INCREMENT:
         //ADD
         alufn = b100000; bsel = 1; c = 3b100;
-        ra = 7h4B; rb = 7h00; rc = 7h4B;
-        if (reg4B < 7h72){
+        ra = reg4B; rb = 7h00; rc = 7h4B;
+
+        debugSeg = 16h0031;
+        if ((reg4B < 7h72) && (slow_clock_edge_detector.out == 1)){
           gameState.d = gameState.SHOOT_BOMB_BRANCH;
         } else {
-          gameState.d = gameState.RESET_BOMBS;
+          if (slow_clock_edge_detector.out == 1){
+            gameState.d = gameState.RESET_BOMBS;
+          }
         }
       
       gameState.DELETE_BOMB:
         //SUB
         alufn = b000001; bsel = 1; c = 1;
-        ra = 7h4B; rb = 7h00; rc = 7h4B;
-        gameState.d = gameState.RESET_BOMBS;
+        ra = reg4B; rb = 7h00; rc = 7h4B;
+
+        debugSeg = 16h0032;
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.RESET_BOMBS;
+        }
       
       
       /// ***** COUNT BOMBS ***** ///
@@ -342,7 +352,7 @@ module gameCU (
         alufn = b010011; bsel = 1; c = 0;
         ra = 7h50; rb = 7h00; rc = 7h48; we = 1; sr = 0;
         
-        debugSeg = 16h0030;
+        debugSeg = 16h0033;
         if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.COUNT_BOMBS;
         }
@@ -352,219 +362,38 @@ module gameCU (
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         
-        debugSeg = 16h0031;
-        if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_0;
-        }
-      
-      /// ********* 0 ********** ///
-      gameState.CHECK_POSITION_BOMB_0:
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_0;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_1;
-        }
-          
-      gameState.CHECK_POSITION_BOMB_0:
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h01; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debugSeg = 16h0032;
-        if (slow_clock_edge_detector.out == 1){
-          if (reg48) {
-            gameState.d = gameState.INCREMENT_BOMB_0;
-          } else {
-            gameState.d = gameState.CHECK_POSITION_BOMB_1;
-          }
-        }
-          
-      gameState.INCREMENT_BOMB_0:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        
-        debugSeg = 16h0033;
-        if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_1;
-        }
-      
-      /// ********* 1 ********** ///
-      gameState.CHECK_POSITION_BOMB_1:
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_1;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_2;
-        }
-      
-      /// ********* 1 ********** ///
-      gameState.CHECK_POSITION_BOMB_1:
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h02; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-  
         debugSeg = 16h0034;
         if (slow_clock_edge_detector.out == 1){
-          if (reg48) {
-            gameState.d = gameState.INCREMENT_BOMB_1;
-          } else {
-            gameState.d = gameState.CHECK_POSITION_BOMB_2;
-          }
+          gameState.d = gameState.CHECK_POSITION_FOR_BOMB;
         }
-          
-      gameState.INCREMENT_BOMB_1:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        debugSeg = 16h0035;
-        
-        if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_2;
-        }
-          
-      /// ********* 2 ********** ///
-      gameState.CHECK_POSITION_BOMB_2:
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_2;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_3;
-        }
-      
-      /// ********* 2 ********** ///
-      gameState.CHECK_POSITION_BOMB_2:
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h03; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debugSeg = 16h0036;
-        
-        if (slow_clock_edge_detector.out == 1){
-          if (reg48) {
-            gameState.d = gameState.INCREMENT_BOMB_2;
-          } else {
-            gameState.d = gameState.CHECK_POSITION_BOMB_3;
-          }
-        }
-      
-      gameState.INCREMENT_BOMB_2:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        
-        debugSeg = 16h0037;
-        if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_3;
-        }
-        
-        
-      /// ********* 3 ********** ///
-      gameState.CHECK_POSITION_BOMB_3:
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h04; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        
-        debugSeg = 16h0038;
-        if (slow_clock_edge_detector.out == 1){
-          if (reg48) {
-            gameState.d = gameState.INCREMENT_BOMB_3;
-          } else {
-            gameState.d = gameState.CHECK_POSITION_BOMB_4;
-          }
-        }
-          
-      gameState.INCREMENT_BOMB_3:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        
-        debugSeg = 16h0039;
-        if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_4;
-        }
-          
-      /// ********* 4 ********** ///
-      gameState.CHECK_POSITION_BOMB_4:
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h05; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-          
-        debugSeg = 16h0040;  
-        if (slow_clock_edge_detector.out == 1){
-          if (reg48) {
-            gameState.d = gameState.INCREMENT_BOMB_4;
-          } else {
-            gameState.d = gameState.CHECK_POSITION_BOMB_5;
-          }
-        }
-          
-      gameState.INCREMENT_BOMB_4:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-      
-        debugSeg = 16h0041;
-        if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.CHECK_POSITION_BOMB_5;
-        }
-        
-      /// ********* 5 ********** ///
-      gameState.CHECK_POSITION_BOMB_5:
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h06; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debugSeg = 16h0042;
-        if (slow_clock_edge_detector.out == 1){
-          if (reg48) {
-            gameState.d = gameState.INCREMENT_BOMB_5;
-          } else {
-            gameState.d = gameState.CHECK_POSITION_BOMB_6;
-          }
-        }
-            
-      gameState.INCREMENT_BOMB_5:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_6;
-        debugSeg = 16h0043;
-        
-        
-      /// ********* 6 ********** ///
-      gameState.CHECK_POSITION_BOMB_6:
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_6;
-        } else {
-          gameState.d = gameState.CHECK_POSITION_BOMB_7;
-        }
-        //CMPEQ
-        alufn = b100001; bsel = 1; c = 1;
-        ra = 7h07; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        debugSeg = 16h0044;
-          
-      gameState.INCREMENT_BOMB_6:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        gameState.d = gameState.CHECK_POSITION_BOMB_7;
-        debugSeg = 16h0045;
-            
-      /// ********* 7 ********** ///
-      gameState.CHECK_POSITION_BOMB_7:
-        if (reg48) {
-          gameState.d = gameState.INCREMENT_BOMB_7;
-        } else {
-          gameState.d = gameState.UPDATE_LIVES;
-        }
-        debugSeg = 16h0046;
-        
-      gameState.INCREMENT_BOMB_7:
-        //ADD
-        alufn = b000000; bsel = 1; c = 1;
-        ra = 7h49; rb = 0; rc = 7h49; we = 1; sr = 0;
-        debugSeg = 16h0047;
 
-        if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.UPDATE_LIVES;
+      gameState.CHECK_POSITION_FOR_BOMB:
+        debugSeg = 16h0035;
+        if (reg48) {
+          //ADD
+          alufn = b000000; bsel = 1; c = 1;
+          ra = 7h49; rb = 7h00; rc = 7h49; we = 1; sr = 0;
+        } else {
+            if (slow_clock_edge_detector.out == 1){
+              gameState.d = gameState.INCREMENT_POS;
+            }
         }
-        
+      
+      gameState.INCREMENT_POS:
+        debugSeg = 16h0036;
+        if (reg4B < 7h08){ 
+          //ADD
+          alufn = b000000; bsel = 1; c = 1;
+          ra = reg4B; rb = 7h00; rc = 7h4B; we = 1; sr = 0;
+          if (slow_clock_edge_detector.out == 1){
+            gameState.d = gameState.CHECK_POSITION_FOR_BOMB;
+          }
+        } else {
+            if (slow_clock_edge_detector.out == 1){
+              gameState.d = gameState.UPDATE_LIVES;
+            }
+        }
+
         
       /// ***** UPDATE LIVES ***** ///
       gameState.UPDATE_LIVES:
