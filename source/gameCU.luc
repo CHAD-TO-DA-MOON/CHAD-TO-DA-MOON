@@ -15,7 +15,7 @@ module gameCU (
     output rb[7],     // read address b
     output rc[7],     // write address c
     output we,        // write enable
-    output sr[3],     // update board gameState regs
+    output sr,     // update board gameState regs
     
     output ioState[4],// 0: -, 1: blank, 2: win, 3: lose, 4: low time
     output debugSeg[16], // 7seg debug output
@@ -112,8 +112,8 @@ module gameCU (
   
   always {
     // default control signals
-    alufn = 6b0; bsel = 0; c = 16b0;
-    ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 3b0;
+    alufn = 6b0; bsel = 0; c = 16h0000;
+    ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 0;
     ioState = 4h0;
     debugSeg = 16h0000;
     
@@ -127,9 +127,9 @@ module gameCU (
     case(gameState.q) {
       gameState.IDLE:
         if (buttons[0] || buttons[1] || buttons[2]) {
-          // shift down by 1 row
-          alufn = 6b0; bsel = 0; c = 16b1;
-          ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = b001;
+          // shift down by 1 row, ADDC: R50 += 0
+          alufn = 6b000000; bsel = 1; c = 16h0000;
+          ra = 7h50; rb = 7h0; rc = 7h50; we = 1; sr = 1;
           debugSeg = 16h0001;
           gameState.d = gameState.IDLE_DEBUG;
         }       
@@ -140,8 +140,9 @@ module gameCU (
         }
       
       gameState.INIT_TIMER:
-        alufn = 6b000000; bsel = 0; c = 16b0;
-        ra = 7h0; rb = 7h0; rc = 7h4A; we = 1; sr = 3b0;
+        // ADDC: timer = 0+30
+        alufn = 6b000000; bsel = 1; c = 16h001E;
+        ra = 7h50; rb = 7h0; rc = 7h4A; we = 1; sr = 0;
         
         debugSeg = 16h0002;
         if (slow_clock_edge_detector.out == 1){
@@ -188,7 +189,7 @@ module gameCU (
       gameState.TIMER_CHECK:
         // CMPEQ: time == 0
         alufn = b100001; bsel = 0; c = 16b0;
-        ra = 7h4A; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
+        ra = 7h4A; rb = 7h50; rc = 7h48; we = 1; sr = 0;
 
         debugSeg = 16h0010;
         if (slow_clock_edge_detector.out == 1){
@@ -209,7 +210,7 @@ module gameCU (
       gameState.TIMER_DECREASE:
         // SUB: decrease timer by 1
         alufn = b000001; bsel = 0; c = 16b0;
-        ra = 7h4A; rb = 7h51; rc = 7h4A; we = 1; sr = 3b0;
+        ra = 7h4A; rb = 7h51; rc = 7h4A; we = 1; sr = 0;
         
         debugSeg = 16h0012;
         gameState.d = gameState.PLAY;
@@ -219,7 +220,7 @@ module gameCU (
       gameState.LEFT_CHECK:
         // CMPLT: player pos < 0
         alufn = b100011; bsel = 0; c = 16b0;
-        ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 3b0;
+        ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 0;
         
         debugSeg = 16h0020;
         if (slow_clock_edge_detector.out == 1){
@@ -240,7 +241,7 @@ module gameCU (
       gameState.LEFT_REPOS:
         // SUB: move player left
         alufn = b000001; bsel = 0; c = 16b0;
-        ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
+        ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 0;
         
         debugSeg = 16h0022;
         if (slow_clock_edge_detector.out == 1){
@@ -250,7 +251,7 @@ module gameCU (
       gameState.RIGHT_CHECK:
         // CMPLEC: player pos < 7
         alufn = b100011; bsel = 1; c = 16h0007;
-        ra = 7h56; rb = 7h00; rc = 7h48; we = 1; sr = 3b0;
+        ra = 7h56; rb = 7h00; rc = 7h48; we = 1; sr = 0;
         
         debugSeg = 16h0023;
         if (slow_clock_edge_detector.out == 1){
@@ -271,7 +272,7 @@ module gameCU (
       gameState.RIGHT_REPOS:
         // ADD: move player right
         alufn = b000000; bsel = 0; c = 16b0;
-        ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 3b0;
+        ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 0;
         
         debugSeg = 16h0025;
         if (slow_clock_edge_detector.out == 1){
@@ -567,8 +568,8 @@ module gameCU (
         
       /// ***** UPDATE LIVES ***** ///
       gameState.UPDATE_LIVES:
-        // SUB : Decrement player life by bomb counter
-        alufn = b000001; bsel = 0; c = 0;  // SUB
+        // SUB: lives_left -= bomb_count
+        alufn = b000001; bsel = 0; c = 0;
         ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
         
         debugSeg = 16h0050;
@@ -577,7 +578,7 @@ module gameCU (
         }
             
       gameState.CHECK_PLAYER_LIVES:
-        // CMPLT
+        // CMPLT: lives_left < 0
         alufn = b100011; bsel = 0; c = 0;
         ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
         
@@ -622,10 +623,10 @@ module gameCU (
           }
         }
             
-      // Move rows down by 1
       gameState.UPDATE_ROWS:
-        alufn = 6b0; bsel = 0; c = 1;
-        ra = 7h0; rb = 7h0; rc = 7h0; we = 1; sr = 1;
+        // shift down by 1 row, ADDC: R50 += 0
+        alufn = 6b000000; bsel = 1; c = 16h0000;
+        ra = 7h50; rb = 7h0; rc = 7h50; we = 1; sr = 1;
         
         debugSeg = 16h0062;
         if (slow_clock_edge_detector.out == 1){
@@ -654,7 +655,7 @@ module gameCU (
         // SUB : lines_left = lines_left - 1
         debugSeg = 16h0063;
         alufn = b000001; bsel = 0; c = 16b0;
-        ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 3b0;
+        ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 0;
         
         if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.PLAY; // Game state to wait for input from player
