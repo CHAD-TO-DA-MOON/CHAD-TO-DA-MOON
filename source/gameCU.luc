@@ -3,7 +3,7 @@ module gameCU (
     input rst,        // reset
     input buttons[3], // button input, 0-2 left to right
     input reg48[16],  // branching reg
-    input reg4B[16],
+    input reg4B[16],  // reference reg
     input timerTick,  // 1 when timer should update (edge detector)
     input debugIn[16],// debug inputs to trigger game states
     
@@ -25,7 +25,6 @@ module gameCU (
   // TODOS
   // Add little time left (Timer)
   // Reduce states from branching (due to boostrapped reg48)
-  // Add SHOOT_AMMO_CHECKing
   // bsel and c can be simplified into one control signal
   
   .clk(clk) {
@@ -36,6 +35,8 @@ module gameCU (
     fsm gameState(#INIT(IDLE)) = {
       IDLE, // await start game, initialise board
       INIT_TIMER, // start timer
+      INIT_LIVES,
+      INIT_AMMO,
       PLAY, // await player action
       
       TIMER_CHECK, // check if game ended, decrease otherwise
@@ -111,11 +112,11 @@ module gameCU (
     
     case(gameState.q) {
       gameState.IDLE:
+        debugSeg = 16h0001;
         if (buttons[0] || buttons[1] || buttons[2]) {
           // shift down by 1 row, ADDC: R50 += 0
           alufn = 6b000000; bsel = 1; c = 16h0000;
           ra = 7h50; rb = 7h0; rc = 7h50; we = 1; sr = 1;
-          debugSeg = 16h0001;
           gameState.d = gameState.IDLE_DEBUG;
         }       
       
@@ -131,11 +132,31 @@ module gameCU (
         
         debugSeg = 16h0002;
         if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.INIT_LIVES;
+        }
+      
+      gameState.INIT_LIVES:
+        // ADDC: lives = 0+3
+        alufn = 6b000000; bsel = 1; c = 16h0003;
+        ra = 7h50; rb = 7h0; rc = 7h54; we = 1; sr = 0;
+        
+        debugSeg = 16h0003;
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.INIT_AMMO;
+        }
+      
+      gameState.INIT_AMMO:
+        // ADDC: ammo = 0+8
+        alufn = 6b000000; bsel = 1; c = 16h0008;
+        ra = 7h50; rb = 7h0; rc = 7h55; we = 1; sr = 0;
+        
+        debugSeg = 16h0004;
+        if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.PLAY;
         }
       
       gameState.PLAY:
-        debugSeg = 16h0003;
+        debugSeg = 16h0005;
         
         if (buttons[0]) {
           gameState.d = gameState.LEFT_CHECK_DEBUG;
