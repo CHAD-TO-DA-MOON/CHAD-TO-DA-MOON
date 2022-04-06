@@ -50,14 +50,14 @@ module gameCU (
       RIGHT_BRANCH,
       RIGHT_REPOS,
       
-      SHOOT_AMMO_CHECK, // check ammo, SHOOT_AMMO_CHECK, remove bomb, decrement ammo
+      SHOOT_AMMO_CHECK, // check ammo, remove bomb, decrement ammo
       SHOOT_AMMO_BRANCH,
-      DECREMENT_AMMO,
-      SHOOT_INIT_CHECK_POS,
-      BOMB_CHECK_INCREMENT,
-      SHOOT_CHECK_HAS_BOMB,
+      SHOOT_INIT_BOMB_POS,
+      SHOOT_BOMB_CHECK,
       SHOOT_BOMB_BRANCH,
-      DELETE_BOMB,
+      SHOOT_BOMB_POS_INCREMENT,
+      SHOOT_BOMB_POS_CHECK,
+      SHOOT_DELETE_BOMB,
       
       RESET_BOMBS,
       COUNT_BOMBS, // calculate bombs
@@ -265,10 +265,10 @@ module gameCU (
           gameState.d = gameState.RESET_BOMBS;
         }
       
-      gameState.SHOOT_AMMO_CHECK: //TODO : Not done yet. Might need to decrease ammo counter
-        // CMPLE
-        alufn = b100101; bsel = 1; c = 0;
-        ra = 7h49; rb = 7h00; rc = 7h48; we = 1; sr = 0;
+      gameState.SHOOT_AMMO_CHECK:
+        // CMPLT: ammo_left < 0
+        alufn = b100101; bsel = 0; c = 0;
+        ra = 7h55; rb = 7h50; rc = 7h48; we = 1; sr = 0;
         
         debugSeg = 16h0026;
         if (slow_clock_edge_detector.out == 1){
@@ -277,31 +277,31 @@ module gameCU (
       
       gameState.SHOOT_AMMO_BRANCH:
         debugSeg = 16h0027;
-        if ((reg48) && (slow_clock_edge_detector.out == 1)){
-          gameState.d = gameState.RESET_BOMBS;
-        } else {
-          // SUB
-          alufn = b000001; bsel = 1; c = 1;
-          ra = 7h49; rb = 7h00; rc = 7h49; we = 1; sr = 0;
-          if (slow_clock_edge_detector.out == 1){
-            gameState.d = gameState.SHOOT_INIT_CHECK_POS;
+        if (slow_clock_edge_detector.out == 1){
+          if (reg48){
+            gameState.d = gameState.RESET_BOMBS;
+          } else {
+            // SUB: ammo_left -= 1
+            alufn = b000001; bsel = 0; c = 0;
+            ra = 7h55; rb = 7h51; rc = 7h55; we = 1; sr = 0;
+            gameState.d = gameState.SHOOT_INIT_BOMB_POS;
           }
         }
       
-      gameState.SHOOT_INIT_CHECK_POS:
-        //ADD
-        alufn = b100000; bsel = 0; c = 0;
-        ra = 7h56; rb = 7h00; rc = 7h4B;
+      gameState.SHOOT_INIT_BOMB_POS:
+        //ADD: pos = player_row + 0
+        alufn = b000000; bsel = 0; c = 0;
+        ra = 7h56; rb = 7h50; rc = 7h4B;
 
         debugSeg = 16h0028;
         if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.SHOOT_CHECK_HAS_BOMB;
+          gameState.d = gameState.SHOOT_BOMB_CHECK;
         }
       
-      gameState.SHOOT_CHECK_HAS_BOMB:
-        //CMPEQ: check position == 0
-        alufn = b100001; bsel = 1; c = 1;
-        ra = reg4B; rb = 7h00; rc = 7h48;
+      gameState.SHOOT_BOMB_CHECK:
+        //CMPEQ: check_bomb_pos == 1
+        alufn = b100001; bsel = 0; c = 0;
+        ra = reg4B; rb = 7h51; rc = 7h48;
 
         debugSeg = 16h0029;
         if (slow_clock_edge_detector.out == 1){
@@ -309,38 +309,42 @@ module gameCU (
         }
       
       gameState.SHOOT_BOMB_BRANCH:
-        // DELETE_BOMB if check position == 0; BOMB_CHECK_INCREMENT otherwise
-        
+        // SHOOT_DELETE_BOMB if check_bomb_pos == 1; SHOOT_BOMB_POS_INCREMENT otherwise
         debugSeg = 16h0030;
-
-        if ((reg48) && (slow_clock_edge_detector.out == 1)){
-          gameState.d = gameState.DELETE_BOMB;
-        } else {
-          if (slow_clock_edge_detector.out == 1){
-            gameState.d = gameState.BOMB_CHECK_INCREMENT;
+        if (slow_clock_edge_detector.out == 1){
+          if (reg48){
+            gameState.d = gameState.SHOOT_DELETE_BOMB;
+          } else {
+            gameState.d = gameState.SHOOT_BOMB_POS_INCREMENT;
           }
         }
       
-      gameState.BOMB_CHECK_INCREMENT:
-        //ADD
-        alufn = b100000; bsel = 1; c = 3b100;
-        ra = reg4B; rb = 7h00; rc = 7h4B;
+      gameState.SHOOT_BOMB_POS_INCREMENT:
+        //ADD: check_bomb_pos += 8
+        alufn = b000000; bsel = 1; c = 16h0008;
+        ra = 7h4B; rb = 7h00; rc = 7h4B;
 
         debugSeg = 16h0031;
-        if ((reg4B < 7h72) && (slow_clock_edge_detector.out == 1)){
-          gameState.d = gameState.SHOOT_BOMB_BRANCH;
-        } else {
-          if (slow_clock_edge_detector.out == 1){
+        if (slow_clock_edge_detector.out == 1){
+          gameState.d = gameState.SHOOT_BOMB_POS_CHECK;
+        }
+       
+      gameState.SHOOT_BOMB_POS_CHECK:
+        debugSeg = 16h0032;
+        if (slow_clock_edge_detector.out == 1){
+          if (reg4B < 7h72){
+            gameState.d = gameState.SHOOT_BOMB_BRANCH;
+          } else {
             gameState.d = gameState.RESET_BOMBS;
           }
         }
       
-      gameState.DELETE_BOMB:
-        //SUB
-        alufn = b000001; bsel = 1; c = 1;
-        ra = reg4B; rb = 7h00; rc = 7h4B;
+      gameState.SHOOT_DELETE_BOMB:
+        //SUB: reg[check_bomb_pos] -= 1
+        alufn = b000001; bsel = 0; c = 0;
+        ra = reg4B; rb = 7h51; rc = reg4B;
 
-        debugSeg = 16h0032;
+        debugSeg = 16h0033;
         if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.RESET_BOMBS;
         }
@@ -352,7 +356,7 @@ module gameCU (
         alufn = b010011; bsel = 1; c = 0;
         ra = 7h50; rb = 7h00; rc = 7h48; we = 1; sr = 0;
         
-        debugSeg = 16h0033;
+        debugSeg = 16h0040;
         if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.COUNT_BOMBS;
         }
@@ -362,13 +366,13 @@ module gameCU (
         alufn = b100001; bsel = 1; c = 1;
         ra = 7h00; rb = 7h00; rc = 7h48; we = 0; sr = 0;
         
-        debugSeg = 16h0034;
+        debugSeg = 16h0041;
         if (slow_clock_edge_detector.out == 1){
           gameState.d = gameState.CHECK_POSITION_FOR_BOMB;
         }
 
       gameState.CHECK_POSITION_FOR_BOMB:
-        debugSeg = 16h0035;
+        debugSeg = 16h0042;
         if (reg48) {
           //ADD
           alufn = b000000; bsel = 1; c = 1;
@@ -380,7 +384,7 @@ module gameCU (
         }
       
       gameState.INCREMENT_POS:
-        debugSeg = 16h0036;
+        debugSeg = 16h0043;
         if (reg4B < 7h08){ 
           //ADD
           alufn = b000000; bsel = 1; c = 1;
