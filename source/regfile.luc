@@ -1,0 +1,71 @@
+module regfile (
+    input clk,  // clock
+    input rst,  // reset
+    input game_reset,
+    input ra[7],
+    input rb[7],
+    input rc[7],
+    input data_in[16],
+    input we,
+    input sr,
+    output ra_data[16],
+    output rb_data[16],
+
+    output game_board[72][2],
+    output lives_left[16],
+    output ammo_left[16],
+    output player_row[16],
+    output flash_status[16],
+    output current_line[16]
+  ) {
+  
+ sig reg_out[102][16]; // 102 to be edited
+
+two_to_sixteen sixteen[72];
+  
+  .clk(clk), .rst(rst) {
+    dff reg2[72][2];
+    dff reg16[30][16]; // 30 to be edited
+  }
+  
+  always {
+    
+    if(game_reset) {
+      reg2.d = 72x{{2b0}};
+      reg16.d = 30x{{16b0}};
+    } else {
+      reg2.d = reg2.q;
+      reg16.d = reg16.q;
+    }
+    
+    sixteen.in = reg2.q;
+    reg_out[71:0] = sixteen.out;
+    reg_out[101:72] = reg16.q[29:0];
+    
+    ra_data = reg_out[ra];
+    rb_data = reg_out[rb];
+    
+    // I/O output
+    game_board = reg2.q;
+    current_line = reg_out[h53];
+    lives_left = reg_out[h54];
+    ammo_left = reg_out[h55];
+    player_row = reg_out[h56];
+    flash_status = reg_out[h57];
+    
+    if(we) {
+      if(sr) {
+        reg2.d[71:64] = $build(data_in, 8);
+        reg2.d[63:0] = reg2.q[71:8];
+      } else {
+          if (rc != h50 && rc != h51) {
+          if (rc<72) {
+            reg2.d[rc] = data_in[1:0];
+          } else {
+            reg16.d[rc-72] = data_in;
+          }
+        }
+      }
+    }
+  } 
+}

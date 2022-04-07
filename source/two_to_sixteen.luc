@@ -1,0 +1,10 @@
+module two_to_sixteen (
+    input in[2],
+    output out[16]
+  ) {
+
+  always {
+    out[1:0] = in;
+    out[15:2] = 0;
+  }
+}
