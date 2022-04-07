@@ -1,0 +1,80 @@
+module led_strip_output (
+    input clk,  // clock
+    input rst,  // reset
+    input main_board_status[72],
+    input lives_left[16],
+    input ammo_left[16],
+    input player_pos[16],
+    input flash_status,
+    output current_led_bit
+  ) {
+  
+  const VERT_DECODER = {
+    8d0, 8d1, 8d3, 8d7, 8d15, 8d31, 8d63, 8d127, 8d255
+  };
+  
+  const LIFE_COLOR = {24h0, 24hFFFFFF}; // TODO? color life
+  const AMMO_COLOR = {24h0, 24hFFFFFF}; // TODO? color ammo
+  const PLAYER_COLOR = {24h0, 24hFFFFFF}; // TODO? color player
+  
+  const MAIN_BOARD_COLOR = {
+    24h0000FF,
+    24h00FF00,
+    24hFF0000,
+    24h0F0F0F
+  }; // TODO: color of game board
+  
+  .clk(clk) {
+    .rst(rst) {
+      ws2812b_writer led_writer(#PIXEL_COUNT(100));
+    }
+  }
+  
+  var row, col;
+  sig flash_color[24];
+  sig game_leds[10][10][24];
+  sig pixel[7];
+  decoder player_pos_decoder(#WIDTH(3));
+  
+  always {
+    // build player
+    player_pos_decoder.in = player_pos[2:0];
+    for(col = 1; col <= 8; col++) {
+      game_leds[0][col] = PLAYER_COLOR[player_pos_decoder.out[col-1]];
+    }
+    
+    // build lives_left
+    for(row = 1; row <= 9; row++) {
+      game_leds[row][9] = LIFE_COLOR[VERT_DECODER[lives_left][row-1]];
+    }
+    
+    // build ammo_left
+    for(row = 1; row <= 9; row++) {
+      game_leds[row][0] = AMMO_COLOR[VERT_DECODER[ammo_left][row-1]];
+    }
+    
+    // build game board
+    for(row = 1; row <= 9; row++) {
+      for(col = 1; col <= 8; col++) {
+        game_leds[row][col] = MAIN_BOARD_COLOR[main_board_status[8*(row-1) + (col-1)]];
+      }
+    }
+    
+    // build flash_status
+    flash_color = 0; // TODO: flashing module
+    game_leds[0][0] = flash_color;
+    game_leds[0][9] = flash_color;
+    game_leds[9][0] = flash_color;
+    game_leds[9][9] = flash_color;
+    
+    // connect to ws2812b_writer
+    led_writer.update = 1;
+    current_led_bit = led_writer.led;
+    pixel = led_writer.pixel;
+    
+    // flip horizontal orentation of leds in even rows (0,2,...8)
+    if(!pixel[3]) pixel[2:0] = pixel[2:0] ^ 3b111;
+    
+    led_writer.color = game_leds[pixel[6:3]][pixel[2:0]];
+  }
+}
