@@ -6,7 +6,8 @@ module ws2812b_writer #(
     input update, // feed '1' to enable this strip
     input color[24],   			// GBR, 8 bits each, color to render for all LED 
     output pixel[$clog2(PIXEL_COUNT)],  // Index of the LED, with the color in color[24]
-    output led		//Goes to the first LED in the chain
+    output led,		//Goes to the first LED in the chain
+    output pixel_changing
 
   ) {
   
@@ -22,8 +23,9 @@ module ws2812b_writer #(
   
   always {
     led = 0;
-    
+    pixel_changing = 0;
     pixel = pixel_ctr.q;
+    
     case (state.q) {
       state.SEND_PIXEL:
         if (color[bit_ctr.q]) //if current bit is HIGH, send 80 1's and 45 0's
@@ -39,6 +41,7 @@ module ws2812b_writer #(
           if (bit_ctr.q == 23) { //check if you have sent all 24 bits 
             bit_ctr.d = 0;
             pixel_ctr.d = pixel_ctr.q + 1;
+            pixel_changing = 1;
               
             if (pixel_ctr.q == PIXEL_COUNT-1) { //check if you have sent data to all LEDs
               pixel_ctr.d = 0;
