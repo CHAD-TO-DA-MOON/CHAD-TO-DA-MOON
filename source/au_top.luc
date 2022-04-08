@@ -9,12 +9,13 @@ module au_top (
     output io_sel [4],      // Digit select on IO Shield
     input io_button [5],    // 5 buttons on IO Shield
     input io_dip [3][8],     // DIP switches on IO Shield
-    output outled           // pin3 LED_STRIP
+    output outled           // pin3 led_strip_writer
   ) {
   
   sig rst;                  // reset signal
   const LEDCOLOR = {hFF0000, h00FF00, h0000FF, h9B673C, hFF0000, h00FF00, h0000FF, h9B673C, hFF0000, h00FF00};
-  ws2812b_writer led_strip(#PIXEL_COUNT(10), .clk(clk), .rst(rst)); //set for 3 pixels
+  ws2812b_writer led_strip_writer(#PIXEL_COUNT(10), .clk(clk), .rst(rst)); //set for 3 pixels
+  
   
   .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA
@@ -24,6 +25,7 @@ module au_top (
     edge_detector buttondetector[5](#RISE(1), #FALL(0));
     
     .rst(rst) {
+      led_strip_output_test led_test;
       multiSevenSegment multiSeg;
       gameBeta beta;
     }
@@ -61,9 +63,12 @@ module au_top (
     io_led[0] = beta.debugLed[7:0];
     io_led[1] = beta.debugLed[15:8];
     
-    // led_strip
-    led_strip.update = 1; //sample write 
-    led_strip.color = LEDCOLOR[led_strip.pixel];
-    outled = led_strip.led;
+    // led_strip_writer
+    led_strip_writer.update = 1; //sample write
+    led_strip_writer.color = LEDCOLOR[led_strip_writer.pixel];
+    outled = led_strip_writer.led;
+    
+    // led_strip_output_test
+    outled = led_test.outlet;
   }
 }

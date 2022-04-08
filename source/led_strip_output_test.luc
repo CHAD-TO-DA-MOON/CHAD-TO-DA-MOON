@@ -1,0 +1,27 @@
+module led_strip_output_test (
+    input clk,  // clock
+    input rst,  // reset
+    output outlet
+  ) {
+  .clk(clk) {
+    .rst(rst) {
+      led_strip_output led_strip_out;
+    }
+  }
+  always {
+    led_strip_out.lives_left = 16b0000000000000001;
+    led_strip_out.ammo_left = 16b0000000000000011;
+    led_strip_out.player_pos = 16b0000000000000100;
+    led_strip_out.flash_status = 16b0000000000000001;
+    led_strip_out.main_board_status[7:0] = $build(16b0100000000000100, 8);
+    led_strip_out.main_board_status[15:8] = $build(16b0000000000000000, 8);
+    led_strip_out.main_board_status[23:16] = $build(16b0000010000000000, 8);
+    led_strip_out.main_board_status[31:24] = $build(16b0000000000000000, 8);
+    led_strip_out.main_board_status[39:32] = $build(16b0001000000010000, 8);
+    led_strip_out.main_board_status[47:40] = $build(16b0000000000000000, 8);
+    led_strip_out.main_board_status[55:48] = $build(16b0000000100000000, 8);
+    led_strip_out.main_board_status[63:56] = $build(16b0000000100000001, 8);
+    led_strip_out.main_board_status[71:64] = $build(16b0000000000000000, 8);
+    outlet = led_strip_out.current_led_bit;
+  }
+}
