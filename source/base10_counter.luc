@@ -1,0 +1,31 @@
+module base10_counter (
+    input clk,  // clock
+    input rst,  // reset
+    input increment,
+    output row[4],
+    output col[4]
+  ) {
+  .clk(clk) {
+    .rst(rst) {
+      dff dff_row[4];
+      dff dff_col[4];
+    }
+  }
+  always {
+    col = dff_col.q;
+    row = dff_row.q;
+    
+    if (increment) {
+      if (dff_col.q != 9) {
+        dff_col.d = dff_col.q + 1;
+      } else {
+        dff_col.d = 0;
+        if (dff_row.q != 9) {
+          dff_row.d = dff_row.q + 1;
+        } else {
+          dff_row.d = 0;
+        }
+      }
+    }
+  }
+}

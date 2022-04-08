@@ -11,6 +11,7 @@
     <component>counter.luc</component>
     <src top="true">au_top.luc</src>
     <component>decoder.luc</component>
+    <src>base10_counter.luc</src>
     <src>ws2812b_writer.luc</src>
     <src>multiplier.luc</src>
     <src>two_to_sixteen.luc</src>

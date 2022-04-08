@@ -10,39 +10,36 @@ module led_strip_output (
   ) {
   
   const VERT_DECODER = {
-    8d0, 8d1, 8d3, 8d7, 8d15, 8d31, 8d63, 8d127, 8d255
+    8d255, 8d127, 8d63, 8d31, 8d15, 8d7, 8d3, 8d1, 8d0
   };
   
-  const LIFE_COLOR = {24h0, 24h32CD32}; // TODO? color life -> Green
-  const AMMO_COLOR = {24h0, 24hFFBF00}; // TODO? color ammo -> Yello
-  const PLAYER_COLOR = {24h0, 24h0096FF}; // TODO? color player -> Blue
+  const LIFE_COLOR = {24h0000FF, 24h0}; // TODO? color life -> Green
+  const AMMO_COLOR = {24h00FFFF, 24h0}; // TODO? color ammo -> Yello
+  const PLAYER_COLOR = {24hFF0000, 24h0}; // TODO? color player -> Blue
   
   // const LIFE_COLOR = {24h0, 24hFFFFFF}; // TODO? color life
   // const AMMO_COLOR = {24h0, 24hFFFFFF}; // TODO? color ammo
   // const PLAYER_COLOR = {24h0, 24hFFFFFF}; // TODO? color player
   
   const MAIN_BOARD_COLOR = {
-    24h000000,
-    24hFF0000,
-    24hFF0000,
-    24h0F0F0F
+    24hFF00FF,  // blue-green
+    24hFFFF00, // purple
+    24h00FF00, // red
+    24h0F0F0F // grey
   }; // TODO: color of game main_board_status
   
   
   .clk(clk) {
     .rst(rst) {
       ws2812b_writer led_writer(#PIXEL_COUNT(100));
+      base10_counter base10_ctr;
       dff counter[25];
-      dff reg_pixel_col[4];
     }
   }
   
   var row, col;
   sig flash_color[24];
   sig game_leds[10][10][24];
-  sig pixel[7];
-  sig pixel_row[4];
-  sig pixel_col[4];
   decoder player_pos_decoder(#WIDTH(3));
   decoder flash_color_decoder(#WIDTH(2)); // 2 bits for indexing 4 colours
   
@@ -50,19 +47,19 @@ module led_strip_output (
     game_leds = 10x{{10x{{24b0}}}};
     // build player
     player_pos_decoder.in = player_pos[2:0];
-    //for(col = 1; col <= 8; col++) {
-    //  game_leds[0][col] = PLAYER_COLOR[player_pos_decoder.out[col-1]];
-    //}
+    for(col = 1; col <= 8; col++) {
+      game_leds[0][col] = PLAYER_COLOR[player_pos_decoder.out[col-1]];
+    }
     
     // build lives_left
-    //for(row = 1; row <= 9; row++) {
-    //  game_leds[row][9] = LIFE_COLOR[VERT_DECODER[lives_left][row-1]];
-    //}
+    for(row = 1; row <= 8; row++) {
+      game_leds[row][9] = LIFE_COLOR[VERT_DECODER[lives_left][row-1]];
+    }
     
     // build ammo_left
-    //for(row = 1; row <= 9; row++) {
-    //  game_leds[row][0] = AMMO_COLOR[VERT_DECODER[ammo_left][row-1]];
-    //}
+    for(row = 1; row <= 8; row++) {
+      game_leds[row][0] = AMMO_COLOR[VERT_DECODER[ammo_left][row-1]];
+    }
     
     // build game board
     for(row = 1; row <= 9; row++) {
@@ -76,17 +73,29 @@ module led_strip_output (
     counter.d = counter.q + 1;
     flash_color_decoder.in = flash_status[1:0];
     
+    case (counter.q[24]){
+      b0:
+        game_leds[0][0] = 24h0F0F0F;
+        game_leds[0][9] = 24h0F0F0F;
+        game_leds[9][0] = 24h0F0F0F;
+        game_leds[9][9] = 24h0F0F0F; 
+    
+      b1: 
+        game_leds[0][0] = MAIN_BOARD_COLOR[flash_color_decoder.out];
+        game_leds[0][9] = MAIN_BOARD_COLOR[flash_color_decoder.out];
+        game_leds[9][0] = MAIN_BOARD_COLOR[flash_color_decoder.out];
+        game_leds[9][9] = MAIN_BOARD_COLOR[flash_color_decoder.out];
+    }
+    
     // connect to ws2812b_writer
     led_writer.update = 1;
     current_led_bit = led_writer.led;
-    pixel = led_writer.pixel;
-    
     // flip horizontal orentation of leds in even rows (0, 2, 4...8)
-    pixel_row = pixel / 10;
-    pixel_col = pixel - (pixel_row * 10); // assuming that division rounds down
-    if (led_writer.pixel_changing) 
-      reg_pixel_col.d = pixel_row[0] ? pixel_col : 9 - pixel_col;
+    base10_ctr.increment = led_writer.pixel_changing;
     
-    led_writer.color = game_leds[pixel_row][reg_pixel_col.q];
+    // led_writer.color = game_leds[pixel_row][pixel_row[0] ? pixel_col : 9 - pixel_col];
+    led_writer.color = game_leds[base10_ctr.row][(
+        base10_ctr.row[0] ? base10_ctr.col : 9 - base10_ctr.col)];
+        
   }
 }
