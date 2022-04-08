@@ -1,11 +1,11 @@
 module led_strip_output (
     input clk,  // clock
     input rst,  // reset
-    input main_board_status[72],
+    input main_board_status[72][2],
     input lives_left[16],
     input ammo_left[16],
     input player_pos[16],
-    input flash_status,
+    input flash_status[16],
     output current_led_bit
   ) {
   
