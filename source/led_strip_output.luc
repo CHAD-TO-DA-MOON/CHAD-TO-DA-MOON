@@ -22,10 +22,10 @@ module led_strip_output (
   // const PLAYER_COLOR = {24h0, 24hFFFFFF}; // TODO? color player
   
   const MAIN_BOARD_COLOR = {
-    24hFF00FF,  // blue-green
-    24hFFFF00, // purple
-    24h00FF00, // red
-    24h0F0F0F // grey
+    24hFF00FF,  // blue-green <- status:11
+    24hFFFF00, // purple <- status:10
+    24h00FF00, // red <- status:01
+    24h0F0F0F // grey <- status:00
   }; // TODO: color of game main_board_status
   
   
@@ -51,6 +51,7 @@ module led_strip_output (
       game_leds[0][col] = PLAYER_COLOR[player_pos_decoder.out[col-1]];
     }
     
+      
     // build lives_left
     for(row = 1; row <= 8; row++) {
       game_leds[row][9] = LIFE_COLOR[VERT_DECODER[lives_left][row-1]];
@@ -66,6 +67,11 @@ module led_strip_output (
       for(col = 1; col <= 8; col++) {
         game_leds[row][col] = MAIN_BOARD_COLOR[main_board_status[8*(row-1) + (col-1)]];
       }
+    }
+    
+    // shade the user column with blue
+    for(row=1; row <= 9; row++) {
+      game_leds[row][player_pos + 1] = game_leds[row][player_pos + 1] & (24h080000);
     }
     
     // TODO: flashing module
@@ -91,7 +97,7 @@ module led_strip_output (
     led_writer.update = 1;
     current_led_bit = led_writer.led;
     // flip horizontal orentation of leds in even rows (0, 2, 4...8)
-    base10_ctr.increment = led_writer.pixel_changing;
+    base10_ctr.increment = led_writer.is_next;
     
     // led_writer.color = game_leds[pixel_row][pixel_row[0] ? pixel_col : 9 - pixel_col];
     led_writer.color = game_leds[base10_ctr.row][(
