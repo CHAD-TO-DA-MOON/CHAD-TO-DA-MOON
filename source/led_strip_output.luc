@@ -25,7 +25,7 @@ module led_strip_output (
     24hFF00FF,  // blue-green <- status:11
     24hFFFF00, // purple <- status:10
     24h00FF00, // red <- status:01
-    24h0F0F0F // grey <- status:00
+    24h000000 // black <- status:00
   }; // TODO: color of game main_board_status
   
   
@@ -70,9 +70,9 @@ module led_strip_output (
     }
     
     // shade the user column with blue
-    for(row=1; row <= 9; row++) {
-      game_leds[row][player_pos + 1] = game_leds[row][player_pos + 1] & (24h080000);
-    }
+   //for(row=1; row <= 9; row++) {
+    //  game_leds[row][player_pos + 1] = game_leds[row][player_pos + 1] & (24h080000);
+    //}
     
     // TODO: flashing module
     // build flash_status
