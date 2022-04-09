@@ -42,6 +42,7 @@ module led_strip_output (
   sig game_leds[10][10][24];
   decoder player_pos_decoder(#WIDTH(3));
   decoder flash_color_decoder(#WIDTH(2)); // 2 bits for indexing 4 colours
+  column_shader player_column_shader;
   
   always {
     game_leds = 10x{{10x{{24b0}}}};
@@ -93,14 +94,19 @@ module led_strip_output (
         game_leds[9][9] = MAIN_BOARD_COLOR[flash_color_decoder.out];
     }
     
+    // shade the player's column 
+    player_column_shader.enable = 1;
+    player_column_shader.game_led_in = game_leds;
+    player_column_shader.shadow_color = 24hF0A0A0; // make the column shaded with blue
+    player_column_shader.shadow_column = player_pos + 1;
+     
     // connect to ws2812b_writer
     led_writer.update = 1;
     current_led_bit = led_writer.led;
-    // flip horizontal orentation of leds in even rows (0, 2, 4...8)
     base10_ctr.increment = led_writer.is_next;
     
-    // led_writer.color = game_leds[pixel_row][pixel_row[0] ? pixel_col : 9 - pixel_col];
-    led_writer.color = game_leds[base10_ctr.row][(
+    // flip horizontal orentation of leds in even rows (0, 2, 4...8)
+    led_writer.color = player_column_shader.game_led_out[base10_ctr.row][(
         base10_ctr.row[0] ? base10_ctr.col : 9 - base10_ctr.col)];
         
   }

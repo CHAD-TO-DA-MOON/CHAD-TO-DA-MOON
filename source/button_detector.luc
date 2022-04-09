@@ -1,0 +1,15 @@
+module button_detector (
+    input clk,  // clock
+    input in,
+    output out
+  ) {
+  .clk(clk) {
+    button_conditioner button_cond;
+    edge_detector edge_dect;
+  }
+  always {
+    button_cond.in = in;
+    edge_dect.in = button_cond.out;
+    out = edge_dect.out;
+  }
+}

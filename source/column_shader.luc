@@ -1,0 +1,17 @@
+module column_shader (
+    input game_led_in[10][10][24],
+    input shadow_column[4],
+    input shadow_color[24],
+    input enable,
+    output game_led_out[10][10][24]
+  ) {
+  var row;
+  always {
+  game_led_out = game_led_in;
+    if (enable) {
+      for(row=0; row<10; row++) {
+        game_led_out[row][shadow_column] = game_led_in[row][shadow_column] | shadow_color;
+      }
+    }
+  }
+}
