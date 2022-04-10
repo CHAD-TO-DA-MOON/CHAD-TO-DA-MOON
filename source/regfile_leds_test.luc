@@ -1,0 +1,114 @@
+module regfile_leds_test (
+    input clk,  // clock
+    input rst,  // reset
+    input button[5],
+    output outlet
+  ) {
+  
+  const ROM = {
+    16b0000000000000000,
+    16b0000000000000000,
+    16b0000000000000000,
+    16b0000000000000000,
+    16b0000000000000000,
+    16b0000000000000000,
+    
+    
+    16b0100000000000100,
+    16b0000000000000000,
+    16b0000010000000000,
+    16b0000000000000000,
+    16b0001000000010000,
+    16b0000000000000000,
+    16b0000000100000000,
+    16b0000000100000001
+  };
+  
+  const NEXT_LINE = 7h53;
+  const LIVES_LEFT = 7h54;
+  const AMMO_LEFT = 7h55;
+  const PLAYER_POS = 7h56;
+  // const FLASH_STATUS = 7h57;
+  
+  .clk(clk) {
+    .rst(rst) {
+      regfile rf;
+      led_strip_output led_strip;
+      dff game_restart(#INIT(1));
+      dff is_next_line(#INIT(0));
+    }
+  }
+  
+  
+  always {
+    outlet = led_strip.current_led_bit;
+    led_strip.ammo_left = rf.ammo_left;
+    led_strip.player_pos = rf.player_row;
+    led_strip.lives_left = rf.lives_left;
+    led_strip.flash_status = rf.flash_status;
+    led_strip.main_board_status = rf.game_board;
+    
+    rf.sr = 0;
+    rf.we = 0;
+    rf.ra = 0;
+    rf.rb = 0;
+    rf.rc = 0;
+    rf.game_reset = 0;
+    rf.data_in = 0;
+  
+    // reset game
+    if(game_restart.q) {
+      rf.game_reset = 1;
+      game_restart.d =0;
+    }
+        
+    // top button to decrease lives
+    if (button[0]) { 
+      rf.we = 1;
+      rf.ra = LIVES_LEFT;
+      rf.rc = LIVES_LEFT;
+      rf.data_in = rf.ra_data - 1;
+    }
+  
+    // bottom button to decrease ammo
+    if (button[2]) {
+      rf.we = 1;
+      rf.ra = AMMO_LEFT;
+      rf.rc = AMMO_LEFT;
+      rf.data_in = rf.ra_data - 1;    
+    }
+  
+    // left button to move player to the left
+    if (button[3]) {
+      rf.we = 1;
+      rf.ra = PLAYER_POS;
+      rf.rc = PLAYER_POS;
+      rf.data_in = rf.ra_data - 1;
+    }
+    
+    // right button to move player to the right
+    if (button[4]) {
+      rf.we = 1;
+      rf.ra = PLAYER_POS;
+      rf.rc = PLAYER_POS;
+      rf.data_in = rf.ra_data + 1;  
+    }
+    
+    // center button to shift row down
+    if (button[1]) {
+        rf.we = 1;
+        rf.sr = 1;
+        rf.data_in =  ROM[rf.next_line];
+        is_next_line.d = 1;
+    }
+    
+    // update next_line
+    if (is_next_line.q == 1) {
+      rf.we = 1;
+      rf.ra = NEXT_LINE;
+      rf.rc = NEXT_LINE;
+      rf.data_in = rf.ra_data + 1;
+      is_next_line.d = 0;
+    }
+  }
+}

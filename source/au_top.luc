@@ -26,6 +26,7 @@ module au_top (
     
     .rst(rst) {
       led_strip_output_test led_test;
+      regfile_leds_test rf_leds_test;
       multiSevenSegment multiSeg;
       gameBeta beta;
     }
@@ -70,5 +71,9 @@ module au_top (
     
     // led_strip_output_test
     outled = led_test.outlet;
+    
+    // regfile_leds_test
+    rf_leds_test.button = buttondetector.out;
+    outled = rf_leds_test.outlet;
   }
 }

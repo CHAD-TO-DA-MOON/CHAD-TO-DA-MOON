@@ -97,7 +97,7 @@ module led_strip_output (
     // shade the player's column 
     player_column_shader.enable = 1;
     player_column_shader.game_led_in = game_leds;
-    player_column_shader.shadow_color = 24hF0A0A0; // make the column shaded with blue
+    player_column_shader.shadow_color = 24hF0F0F0; // make the column shaded with grey
     player_column_shader.shadow_column = player_pos + 1;
      
     // connect to ws2812b_writer

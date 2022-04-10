@@ -1,4 +1,9 @@
-module regfile (
+module regfile #(
+    INIT_LIVES = 8,
+    INIT_AMMOS = 8,
+    INIT_PLAYER_COL = 3,
+    INIT_NEXT_LINE = 0
+  ) (
     input clk,  // clock
     input rst,  // reset
     input game_reset,
@@ -16,10 +21,12 @@ module regfile (
     output ammo_left[16],
     output player_row[16],
     output flash_status[16],
-    output current_line[16]
+    output next_line[16]
   ) {
   
  sig reg_out[102][16]; // 102 to be edited
+ sig new_row[8][2];
+ var col;
 
 two_to_sixteen sixteen[72];
   
@@ -33,9 +40,10 @@ two_to_sixteen sixteen[72];
     if(game_reset) {
       reg2.d = 72x{{2b0}};
       reg16.d = 30x{{16b0}};
-    } else {
-      reg2.d = reg2.q;
-      reg16.d = reg16.q;
+      reg16.d[h53 - 72] = INIT_NEXT_LINE;
+      reg16.d[h54 - 72] = INIT_LIVES;
+      reg16.d[h55 - 72] = INIT_AMMOS;
+      reg16.d[h56 - 72] = INIT_PLAYER_COL;
     }
     
     sixteen.in = reg2.q;
@@ -47,7 +55,7 @@ two_to_sixteen sixteen[72];
     
     // I/O output
     game_board = reg2.q;
-    current_line = reg_out[h53];
+    next_line = reg_out[h53];
     lives_left = reg_out[h54];
     ammo_left = reg_out[h55];
     player_row = reg_out[h56];
@@ -55,7 +63,10 @@ two_to_sixteen sixteen[72];
     
     if(we) {
       if(sr) {
-        reg2.d[71:64] = $build(data_in, 8);
+        new_row = $build(data_in, 8);
+        for (col=0; col < 8; col++) {
+          reg2.d[71-col] = new_row[col];
+        }
         reg2.d[63:0] = reg2.q[71:8];
       } else {
           if (rc != h50 && rc != h51) {

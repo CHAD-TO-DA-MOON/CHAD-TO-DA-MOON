@@ -6,9 +6,9 @@
     <src>sevenSegment.luc</src>
     <src>gameAlu.luc</src>
     <component>button_conditioner.luc</component>
-    <src>button_detector.luc</src>
     <src>base10_counter.luc</src>
     <src>adder.luc</src>
+    <src>regfile_leds_test.luc</src>
     <src>multiSevenSegment.luc</src>
     <component>edge_detector.luc</component>
     <src>multiplier.luc</src>
