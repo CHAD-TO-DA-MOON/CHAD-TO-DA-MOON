@@ -28,6 +28,7 @@ module gameBeta (
     cu.buttons = buttons;    
     cu.reg48 = 0; // placeholder for reg[0x48]
     cu.reg4B = 0; // placeholder for reg[0x48]
+    cu.reg4C = 0; // placeholder for reg[0x4C]
     cu.debugIn = debugIn;
     
     // REGFILE
