@@ -69,3 +69,6 @@ pin io_seg[6] A2;
 pin io_seg[7] A49;
 
 pin outled C3;
+pin button[0] C5;
+pin button[1] C6;
+pin button[2] C8;

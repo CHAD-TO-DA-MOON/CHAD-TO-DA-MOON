@@ -9,7 +9,10 @@ module au_top (
     output io_sel [4],      // Digit select on IO Shield
     input io_button [5],    // 5 buttons on IO Shield
     input io_dip [3][8],     // DIP switches on IO Shield
-    output outled           // pin3 led_strip_writer
+    output outled,           // pinC3 led_strip_writer
+    input buttons[0],      // pinC5 to left pushbutton
+    input buttons[1],    // pinC6 to center pushbutton
+    input buttons[2]      // pinC8 to right pushbutton
   ) {
   
   sig rst;                  // reset signal
