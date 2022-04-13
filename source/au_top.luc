@@ -10,9 +10,9 @@ module au_top (
     input io_button [5],    // 5 buttons on IO Shield
     input io_dip [3][8],     // DIP switches on IO Shield
     output outled,           // pinC3 led_strip_writer
-    input buttons[0],      // pinC5 to left pushbutton
-    input buttons[1],    // pinC6 to center pushbutton
-    input buttons[2]      // pinC8 to right pushbutton
+    input b[0],      // pinC5 to left pushbutton
+    input b[1],    // pinC6 to center pushbutton
+    input b[2]      // pinC8 to right pushbutton
   ) {
   
   sig rst;                  // reset signal
@@ -48,13 +48,18 @@ module au_top (
     io_sel = 4hf;           // select no digits
     
     
-    button_cond.in = io_button; // reduce bouncing
+    //button_cond.in = io_button; // reduce bouncing
+    button_cond.in = b;
     buttondetector.in = button_cond.out; // get edge of button press
     
     // connect manual input
-    beta.buttons[0] = buttondetector.out[3]; // left
-    beta.buttons[1] = buttondetector.out[2]; // center
-    beta.buttons[2] = buttondetector.out[4]; // right
+    // beta.buttons[0] = buttondetector.out[3]; // left
+    // beta.buttons[1] = buttondetector.out[2]; // center
+    // beta.buttons[2] = buttondetector.out[4]; // right
+
+    beta.buttons[0] = buttondetector.out[0]; // left
+    beta.buttons[1] = buttondetector.out[1]; // center
+    beta.buttons[2] = buttondetector.out[2]; // right
     
     beta.debugIn[7:0] = io_dip[0];
     beta.debugIn[15:8] = io_dip[1];
