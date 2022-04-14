@@ -7,10 +7,10 @@ module au_top (
     output io_led [3][8],   // LEDs on IO Shield
     output io_seg [8],      // 7-segment LEDs on IO Shield
     output io_sel [4],      // Digit select on IO Shield
-    input io_button [5],    // 5 buttons on IO Shield
+    input io_button[5],     // 5 buttons on IO Shield
     input io_dip [3][8],    // DIP switches on IO Shield
     output outled,          // pinC3 led_strip_writer
-    input pb[3]            // pinC5 to left, pinC6 to center, pinC8 to right pushbutton
+    input pb[3]             // pinC5 to left, pinC6 to center, pinC8 to right pushbutton
   ) {
   
   sig rst;                  // reset signal
@@ -24,8 +24,8 @@ module au_top (
     edge_detector buttondetector[5](#RISE(1), #FALL(0));
     
     .rst(rst) {
-      led_strip_output_test led_test;
-      regfile_leds_test rf_leds_test;
+      // led_strip_output_test led_test;
+      // regfile_leds_test rf_leds_test;
       multiSevenSegment multiSeg;
       gameBeta beta;
     }
@@ -73,8 +73,8 @@ module au_top (
 
 
     // regfile_leds_test
-    rf_leds_test.button = buttondetector.out;
-    outled = rf_leds_test.outlet;
+    // rf_leds_test.button = buttondetector.out;
+    // outled = rf_leds_test.outlet;
     
     outled = beta.outled;
   }

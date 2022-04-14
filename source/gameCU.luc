@@ -92,7 +92,6 @@ module gameCU (
     };
     
     .rst(rst) {
-      dff pos[8](#INIT(8h03)), lives[8](#INIT(8h03));
       counter slow_timer(#SIZE(1),#DIV(26));  // slow clock
     }
     

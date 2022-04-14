@@ -4,7 +4,7 @@ module gameBeta (
     input buttons[3], // button input, 0-2 left to right
     input debugIn[16],// debug inputs to trigger game states
     output debugSeg[16],
-    output debugLed[24]
+    output debugLed[24],
     output outled
   ) {
   
