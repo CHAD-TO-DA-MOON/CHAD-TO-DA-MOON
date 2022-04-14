@@ -27,7 +27,14 @@ module led_strip_output (
     24hFFFF00, // purple <- status:10
     24h00FF00, // red <- status:01
     24h000000 // black <- status:00
-  }; // TODO: color of game main_board_status
+  }; 
+  
+  const FLASH_COLOR = {
+    24hFFFF00, // purple: time low
+    24h00FF00, // red: lose
+    24h0000FF, // green: win
+    24h000000 // black: no flash
+  };
   
   
   .clk(clk) {
@@ -81,10 +88,10 @@ module led_strip_output (
         game_leds[9][9] = 24h000000; 
     
       b1: 
-        game_leds[0][0] = MAIN_BOARD_COLOR[flash_status[1:0]];
-        game_leds[0][9] = MAIN_BOARD_COLOR[flash_status[1:0]];
-        game_leds[9][0] = MAIN_BOARD_COLOR[flash_status[1:0]];
-        game_leds[9][9] = MAIN_BOARD_COLOR[flash_status[1:0]];
+        game_leds[0][0] = FLASH_COLOR[flash_status[1:0]];
+        game_leds[0][9] = FLASH_COLOR[flash_status[1:0]];
+        game_leds[9][0] = FLASH_COLOR[flash_status[1:0]];
+        game_leds[9][9] = FLASH_COLOR[flash_status[1:0]];
     }
     
     // Initialise idle screen
