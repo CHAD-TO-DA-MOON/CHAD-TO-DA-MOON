@@ -9,7 +9,6 @@ module gameBeta (
   
   gameAlu alu;
   sig aluB[16];
-  sig data_in[16];
   
   .clk(clk) {
     edge_detector edTimer(#RISE(1), #FALL(0));
@@ -40,7 +39,6 @@ module gameBeta (
     regfile.we = cu.we;
     regfile.sr = cu.sr;
     regfile.game_reset = 0;
-    regfile.data_in = 0;
     
     // ALU
     case(cu.bsel) {
@@ -56,9 +54,9 @@ module gameBeta (
     
     // WDSEL
     case(cu.sr) {
-      0: data_in = alu.out;
-      1: data_in = 0; // placeholder for rom
-      default: data_in = 0;
+      0: regfile.data_in = alu.out;
+      1: regfile.data_in = 0; // placeholder for rom
+      default: regfile.data_in = 0;
     }
     
     // DEBUG
