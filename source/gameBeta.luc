@@ -73,6 +73,7 @@ module gameBeta (
     
     // connect led_strip_output with regfile
     outled = led_strip.current_led_bit;
+    led_strip.check_idle = cu.check_idle;
     led_strip.ammo_left = regfile.ammo_left;
     led_strip.player_pos = regfile.player_row;
     led_strip.lives_left = regfile.lives_left;

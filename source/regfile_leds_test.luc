@@ -47,6 +47,7 @@ module regfile_leds_test (
     led_strip.lives_left = rf.lives_left;
     led_strip.flash_status = rf.flash_status;
     led_strip.main_board_status = rf.game_board;
+    led_strip.check_idle = 0;
     
     rf.sr = 0;
     rf.we = 0;

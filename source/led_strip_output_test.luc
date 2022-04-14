@@ -22,6 +22,7 @@ module led_strip_output_test (
     led_strip_out.main_board_status[55:48] = $build(16b0000010000000000, 8);
     led_strip_out.main_board_status[63:56] = $build(16b0000000000000000, 8);
     led_strip_out.main_board_status[71:64] = $build(16b0100000000000100, 8);
+    led_strip_out.check_idle = 0;
     outlet = led_strip_out.current_led_bit;
   }
 }
