@@ -4,7 +4,8 @@ module gameBeta (
     input buttons[3], // button input, 0-2 left to right
     input debugIn[16],// debug inputs to trigger game states
     output debugSeg[16],
-    output debugLed[16]
+    output debugLed[16],
+    output outled
   ) {
   
   gameAlu alu;
@@ -18,6 +19,7 @@ module gameBeta (
       gameCU cu;
       regfile regfile;
       counter slowTimer(#SIZE(1), #DIV(26));
+      led_strip_output led_strip;
     }
   }
 
@@ -42,6 +44,7 @@ module gameBeta (
     regfile.game_reset = 0;
     regfile.data_in = 0;
     
+    
     // ALU
     case(cu.bsel) {
       0: aluB = regfile.rb_data;
@@ -64,5 +67,13 @@ module gameBeta (
     // DEBUG
     debugSeg = cu.debugSeg;
     debugLed = cu.debugLed;
+    
+    // connect led_strip_output with regfile
+    outled = led_strip.current_led_bit;
+    led_strip.ammo_left = regfile.ammo_left;
+    led_strip.player_pos = regfile.player_row;
+    led_strip.lives_left = regfile.lives_left;
+    led_strip.flash_status = regfile.flash_status;
+    led_strip.main_board_status = regfile.game_board;
   }
 }

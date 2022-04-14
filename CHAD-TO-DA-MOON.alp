@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="CHAD-TO-DA-MOON" board="Alchitry Au" language="Lucid" version="3">
   <files>
-    <src>ws2812b_writer.luc</src>
-    <component>counter.luc</component>
-    <src>sevenSegment.luc</src>
-    <src>gameAlu.luc</src>
-    <component>button_conditioner.luc</component>
-    <src>base10_counter.luc</src>
     <src>adder.luc</src>
-    <src>regfile_leds_test.luc</src>
-    <src>multiSevenSegment.luc</src>
-    <component>edge_detector.luc</component>
-    <src>multiplier.luc</src>
+    <component>pipeline.luc</component>
+    <src>led_strip_output.luc</src>
+    <src>regfile.luc</src>
+    <component>counter.luc</component>
+    <src top="true">au_top.luc</src>
+    <src>base10_counter.luc</src>
     <src>two_to_sixteen.luc</src>
+    <src>gameCU.luc</src>
+    <src>gameBeta.luc</src>
     <src>boolean.luc</src>
-    <src>column_shader.luc</src>
+    <src>compare.luc</src>
+    <component>reset_conditioner.luc</component>
+    <src>led_strip_output_test.luc</src>
+    <component>button_conditioner.luc</component>
+    <src>multiSevenSegment.luc</src>
     <src>shifter.luc</src>
     <src>minimum.luc</src>
     <component>decoder.luc</component>
-    <src>compare.luc</src>
-    <component>pipeline.luc</component>
-    <src>led_strip_output.luc</src>
-    <component>reset_conditioner.luc</component>
-    <src>regfile.luc</src>
-    <src>gameBeta.luc</src>
-    <src>led_strip_output_test.luc</src>
-    <src top="true">au_top.luc</src>
-    <src>gameCU.luc</src>
+    <src>ws2812b_writer.luc</src>
+    <src>multiplier.luc</src>
+    <src>column_shader.luc</src>
+    <component>edge_detector.luc</component>
+    <src>gameAlu.luc</src>
+    <src>regfile_leds_test.luc</src>
+    <src>sevenSegment.luc</src>
     <constraint lib="true">alchitry.acf</constraint>
     <constraint lib="true">au.xdc</constraint>
     <constraint>io.acf</constraint>
