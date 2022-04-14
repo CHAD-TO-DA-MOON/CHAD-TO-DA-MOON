@@ -70,10 +70,6 @@ module led_strip_output (
       }
     }
     
-    // shade the user column with blue
-   //for(row=1; row <= 9; row++) {
-    //  game_leds[row][player_pos + 1] = game_leds[row][player_pos + 1] & (24h080000);
-    //}
     
     // TODO: flashing module
     // build flash_status
@@ -88,10 +84,10 @@ module led_strip_output (
         game_leds[9][9] = 24h0F0F0F; 
     
       b1: 
-        game_leds[0][0] = MAIN_BOARD_COLOR[flash_color_decoder.out];
-        game_leds[0][9] = MAIN_BOARD_COLOR[flash_color_decoder.out];
-        game_leds[9][0] = MAIN_BOARD_COLOR[flash_color_decoder.out];
-        game_leds[9][9] = MAIN_BOARD_COLOR[flash_color_decoder.out];
+        game_leds[0][0] = MAIN_BOARD_COLOR[flash_status[1:0]];
+        game_leds[0][9] = MAIN_BOARD_COLOR[flash_status[1:0]];
+        game_leds[9][0] = MAIN_BOARD_COLOR[flash_status[1:0]];
+        game_leds[9][9] = MAIN_BOARD_COLOR[flash_status[1:0]];
     }
     
     // shade the player's column 
