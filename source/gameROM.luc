@@ -1,0 +1,16 @@
+module gameROM (
+    input address[16],  // address the rows
+    output row[16]  // 8 2 bit registers for one row
+  ) {
+
+  const GAME_BOARD_1 = {16b0000000000000000, 16b0000000100000001, 
+  16b0000000100000000, 16b0001000000010000, 
+    16b0000000000000000, 16b0000000000000000, 
+    16b0000010000000000, 16b0000000000000000, 
+    16b0100000000000100, 16b0100000000000100};
+  
+  always {
+    row = GAME_BOARD_1[address];
+  }
+}
+
