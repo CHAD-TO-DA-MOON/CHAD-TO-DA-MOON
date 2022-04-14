@@ -20,6 +20,7 @@ module gameCU #(
     output we,        // write enable
     output sr,        // update board gameState regs
     output gameReset, // reset regfile
+    output check_idle[1],
     
     output debugSeg[16] // 7seg debug output
   ) {
@@ -104,6 +105,7 @@ module gameCU #(
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 0;
     gameReset = 0;
     debugSeg = 16h0000;
+    check_idle = b0;
     
     //edge detectors
     slow_clock_edge_detector.in = slow_timer.value; // Put counter through edge detector
@@ -115,6 +117,7 @@ module gameCU #(
     case(gameState.q) {
       gameState.IDLE:
         debugSeg = 16h0001;
+        check_idle = b1;
         if (buttons[0] || buttons[1] || buttons[2]) {
           // shift down by 1 row, ADDC: R50 += 0
           alufn = 6b000000; bsel = 1; c = 16h0000;
