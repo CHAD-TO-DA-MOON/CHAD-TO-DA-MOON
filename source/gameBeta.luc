@@ -28,9 +28,9 @@ module gameBeta (
     
     // CU - bootstrap branching reg to CU
     cu.buttons = buttons;    
-    cu.reg48 = regfile.check_48; // placeholder for reg[0x48]
-    cu.reg4B = regfile.check_bomb_4B; // placeholder for reg[0x48]
-    cu.reg4C = regfile.check_danger_4C; // placeholder for reg[0x4C]
+    cu.reg48 = regfile.check_48;
+    cu.reg4B = regfile.check_bomb_4B;
+    cu.reg4C = regfile.check_danger_4C;
     cu.debugIn = debugIn;
     
     // REGFILE
@@ -44,13 +44,13 @@ module gameBeta (
     
     // ALU
     case(cu.bsel) {
-      0: aluB = 16b0; // placeholder for rdb
+      0: aluB = regfile.rb_data;
       1: aluB = cu.c;
       default:
         aluB = 16b0;
     }
     
-    alu.x = 16b0; // placeholder for rda
+    alu.x = regfile.ra_data;
     alu.y = aluB;
     alu.alufn = cu.alufn;
     

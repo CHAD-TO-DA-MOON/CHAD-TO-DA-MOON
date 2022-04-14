@@ -21,7 +21,11 @@ module regfile #(
     output ammo_left[16],
     output player_row[16],
     output flash_status[16],
-    output next_line[16]
+    output next_line[16],
+    
+    output check_48[16],
+    output check_bomb_4B[16],
+    output check_danger_4C[16]
   ) {
   
  sig reg_out[102][16]; // 102 to be edited
@@ -60,6 +64,11 @@ two_to_sixteen sixteen[72];
     ammo_left = reg_out[h55];
     player_row = reg_out[h56];
     flash_status = reg_out[h57];
+    
+    // CU output
+    check_48 = reg_out[h48];
+    check_bomb_4B = reg_out[h4B];
+    check_danger_4C = reg_out[h4C];
     
     if(we) {
       if(sr) {
