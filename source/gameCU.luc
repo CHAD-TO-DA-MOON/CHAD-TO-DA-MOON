@@ -235,10 +235,10 @@ module gameCU #(
       
       /// ********* MOVE PLAYER ********** ///
       gameState.LEFT_CHECK:
-        // CMPLT: player pos < 0
+        // CMPLE: player pos <= 0
         debugSeg = 16h0020;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = b100011; bsel = 0; c = 16b0;
+          alufn = b100101; bsel = 0; c = 16b0;
           ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.LEFT_BRANCH;
         }
