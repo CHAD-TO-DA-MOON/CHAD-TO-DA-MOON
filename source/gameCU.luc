@@ -160,9 +160,9 @@ module gameCU #(
         else if (buttons[2]) {
           gameState.d = gameState.RIGHT_CHECK_DEBUG;
         }
-        // else if (timerTick) {
-        //   gameState.d = gameState.TIMER_CHECK_DEBUG;
-        // }
+        else if (slow_clock_edge_detector.out) {
+           gameState.d = gameState.TIMER_CHECK_DEBUG;
+         }
       
       gameState.LEFT_CHECK_DEBUG:
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
@@ -204,6 +204,7 @@ module gameCU #(
         }
         
       gameState.TIME_SET_DANGER:
+        debugSeg = 16h0012;
         // set danger if time <= 10 and danger state has not been set
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           if (reg4C || (debugIn[0] && debugIn[1])) {
@@ -217,7 +218,7 @@ module gameCU #(
       
       gameState.TIMER_BRANCH:
         // LOSE if time == 0, TIMER_DECREASE otherwise
-        debugSeg = 16h0011;
+        debugSeg = 16h0013;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           if (reg48 || (debugIn[0] && debugIn[1])) {
             gameState.d = gameState.LOSE;
@@ -228,7 +229,7 @@ module gameCU #(
       
       gameState.TIMER_DECREASE:
         // SUB: decrease timer by 1
-        debugSeg = 16h0012;
+        debugSeg = 16h0014;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
             alufn = b000001; bsel = 0; c = 16b0;
             ra = 7h4A; rb = 7h51; rc = 7h4A; we = 1; sr = 0;
