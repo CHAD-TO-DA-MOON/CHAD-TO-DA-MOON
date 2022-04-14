@@ -57,7 +57,8 @@ module gameCU (
       SHOOT_INIT_BOMB_POS, // pos=0; while pos<72: if reg[pos]==1: reg[pos]=1; break
       SHOOT_BOMB_CHECK,
       SHOOT_BOMB_BRANCH,
-      SHOOT_BOMB_POS_CHECKINCREMENT,
+      SHOOT_BOMB_BOUNDS_CHECK,
+      SHOOT_BOMB_POS_INCREMENT,
       SHOOT_DELETE_BOMB,
       
       COUNT_BOMBS_INIT, // bomb=0; pos=0; while pos<8: bombs+=reg[pos]; pos+=1;
@@ -79,7 +80,7 @@ module gameCU (
       WIN, LOSE,
       RESET,
       LINES_CHECK, // Check if the lines are 0
-      DECREMENT_ROW,
+      INCREMENT_ROW,
       UPDATE_ROWS, // TODO : Need rom selector
       
       //DEBUG With Slow Clock
@@ -317,7 +318,7 @@ module gameCU (
         debugSeg = 16h0028;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           alufn = b000000; bsel = 0; c = 0;
-          ra = 7h56; rb = 7h50; rc = 7h4B;
+          ra = 7h56; rb = 7h50; rc = 7h4B; we = 1; sr = 0;
           gameState.d = gameState.SHOOT_BOMB_CHECK;
         }
       
@@ -326,28 +327,38 @@ module gameCU (
         debugSeg = 16h0029;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           alufn = b100001; bsel = 0; c = 0;
-          ra = reg4B; rb = 7h51; rc = 7h48;
+          ra = reg4B; rb = 7h51; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.SHOOT_BOMB_BRANCH;
         }
       
       gameState.SHOOT_BOMB_BRANCH:
-        // SHOOT_DELETE_BOMB if check_bomb_pos == 1; SHOOT_BOMB_POS_CHECKINCREMENT otherwise
+        // SHOOT_DELETE_BOMB if check_bomb_pos == 1; SHOOT_BOMB_BOUNDS_CHECK otherwise
         debugSeg = 16h0030;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           if (reg48){
             gameState.d = gameState.SHOOT_DELETE_BOMB;
           } else {
-            gameState.d = gameState.SHOOT_BOMB_POS_CHECKINCREMENT;
+            gameState.d = gameState.SHOOT_BOMB_BOUNDS_CHECK;
           }
         }
-       
-      gameState.SHOOT_BOMB_POS_CHECKINCREMENT:
+      
+      gameState.SHOOT_BOMB_BOUNDS_CHECK:
+        // CMPLE: check_bomb_pos < 72
         debugSeg = 16h0031;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          if (reg4B < 7h72){
+          alufn = b100101; bsel = 1; c = 16h48;
+          ra = reg4B; rb = 7h50; rc = 7h48; we = 1; sr = 0;
+          gameState.d = gameState.SHOOT_BOMB_POS_INCREMENT;
+        }
+       
+      gameState.SHOOT_BOMB_POS_INCREMENT:
+        // SHOOT_BOMB_CHECK if check_bomb_pos < 72; COUNT_BOMBS_INIT otherwise
+        debugSeg = 16h0032;
+        if (debugIn[15] || slow_clock_edge_detector.out == 1){
+          if (reg48){
             //ADD: check_bomb_pos += 8
             alufn = b000000; bsel = 1; c = 16h0008;
-            ra = 7h4B; rb = 7h00; rc = 7h4B;
+            ra = 7h4B; rb = 7h00; rc = 7h4B; we = 1; sr = 0;
             gameState.d = gameState.SHOOT_BOMB_CHECK;
           } else {
             gameState.d = gameState.COUNT_BOMBS_INIT;
@@ -356,10 +367,10 @@ module gameCU (
       
       gameState.SHOOT_DELETE_BOMB:
         //SUB: reg[check_bomb_pos] -= 1
-        debugSeg = 16h0032;
+        debugSeg = 16h0033;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           alufn = b000001; bsel = 0; c = 0;
-          ra = reg4B; rb = 7h51; rc = reg4B;
+          ra = reg4B; rb = 7h51; rc = reg4B; we = 1; sr = 0;
           gameState.d = gameState.COUNT_BOMBS_INIT;
         }
       
@@ -448,23 +459,23 @@ module gameCU (
       /// ********* BOARD UPDATE ********** ///
       // Check whether game ends before updating the board
       gameState.UPDATE_BOARD:
-        // CMPEQ: lines_left == 0
+        // CMPEQ: lines_left <= 19
         debugSeg = 16h0060;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = b100001; bsel = 0; c = 16b0;
+          alufn = b100101; bsel = 1; c = 16h0013;
           ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.UPDATE_BOARD_BRANCH;
         }
         
       // Check if game is over or the rows is needed to be moved down
       gameState.UPDATE_BOARD_BRANCH:
-        // lines_left == 0 win; update rows otherwise
+        // lines_left <= 19 UPDATE_ROWS; WIN otherwise
         debugSeg = 16h0061;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           if (reg48 || (debugIn[0] && debugIn[3])) {
-            gameState.d = gameState.WIN;
-          } else {
             gameState.d = gameState.UPDATE_ROWS;
+          } else {
+            gameState.d = gameState.WIN;
           }
         }
             
@@ -474,15 +485,15 @@ module gameCU (
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           alufn = 6b000000; bsel = 1; c = 16h0000;
           ra = 7h50; rb = 7h0; rc = 7h50; we = 1; sr = 1;
-          gameState.d = gameState.DECREMENT_ROW;
+          gameState.d = gameState.INCREMENT_ROW;
         }
             
       // State to move the rows down
-      gameState.DECREMENT_ROW:
-        // SUB : lines_left = lines_left - 1
+      gameState.INCREMENT_ROW:
+        // ADD : lines_left = lines_left + 1
         debugSeg = 16h0063;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = b000001; bsel = 0; c = 16b0;
+          alufn = b000000; bsel = 0; c = 16b0;
           ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 0;
           gameState.d = gameState.PLAY; // Game state to wait for input from player
         }

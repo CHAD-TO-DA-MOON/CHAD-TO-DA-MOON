@@ -65,9 +65,9 @@ module au_top (
     io_seg = ~multiSeg.seg;
     io_sel = ~multiSeg.sel;
     
-    io_led[0] = h7; // beta.debugLed[7:0];
-    io_led[1] = h8; // beta.debugLed[15:8];
-    io_led[2] = h9; // beta.debugLed[23:16];
+    io_led[0] = beta.debugLed[7:0];
+    io_led[1] = beta.debugLed[15:8];
+    io_led[2] = beta.debugLed[23:16];
     
     // led_strip_writer
 
