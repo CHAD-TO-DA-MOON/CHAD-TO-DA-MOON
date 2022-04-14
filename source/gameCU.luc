@@ -127,29 +127,29 @@ module gameCU #(
       
       gameState.IDLE_DEBUG:
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.INIT_TIMER;
-        }
-      
-      gameState.INIT_TIMER:
-        // ADDC: timer = 0+30
-        debugSeg = 16h0002;
-        if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = 6b000000; bsel = 1; c = 16h001E;
-          ra = 7h50; rb = 7h0; rc = 7h4A; we = 1; sr = 0;
           gameState.d = gameState.INIT_REGFILE;
         }
 
       gameState.INIT_REGFILE:
-        debugSeg = 16h0003;
+        debugSeg = 16h0002;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           gameReset = 1;
+          gameState.d = gameState.INIT_TIMER;
+        }
+        
+      gameState.INIT_TIMER:
+        // ADDC: timer = 0+30
+        debugSeg = 16h0003;
+        if (debugIn[15] || slow_clock_edge_detector.out == 1){
+          alufn = 6b000000; bsel = 1; c = 16h001E;
+          ra = 7h50; rb = 7h0; rc = 7h4A; we = 1; sr = 0;
           gameState.d = gameState.PLAY;
         }
             
       gameState.PLAY:
         debugSeg = 16h0005;
         alufn = b000000; bsel = 0; c = 16h0;
-        ra = 7h50; rb = 7h50; rc = 7h57; we = 1; sr = 0;
+        ra = 7h50; rb = 7h50; rc = 7h50; we = 0; sr = 0;
         
         if (buttons[0]) {
           gameState.d = gameState.LEFT_CHECK_DEBUG;
