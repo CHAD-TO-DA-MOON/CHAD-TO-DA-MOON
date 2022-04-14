@@ -35,8 +35,6 @@ module gameCU (
     fsm gameState(#INIT(IDLE)) = {
       IDLE, // await start game, initialise board
       INIT_TIMER, // start timer
-      INIT_LIVES,
-      INIT_AMMO,
       PLAY, // await player action
       
       TIMER_CHECK, // check if game ended, decrease otherwise
@@ -128,31 +126,11 @@ module gameCU (
       
       gameState.INIT_TIMER:
         // ADDC: timer = 0+30
-        alufn = 6b000000; bsel = 1; c = 16h001E;
-        ra = 7h50; rb = 7h0; rc = 7h4A; we = 1; sr = 0;
-        
-        debugSeg = 16h0002;
         if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.INIT_LIVES;
-        }
-      
-      gameState.INIT_LIVES:
-        // ADDC: lives = 0+3
-        alufn = 6b000000; bsel = 1; c = 16h0003;
-        ra = 7h50; rb = 7h0; rc = 7h54; we = 1; sr = 0;
+          alufn = 6b000000; bsel = 1; c = 16h001E;
+          ra = 7h50; rb = 7h0; rc = 7h4A; we = 1; sr = 0;
         
-        debugSeg = 16h0003;
-        if (slow_clock_edge_detector.out == 1){
-          gameState.d = gameState.INIT_AMMO;
-        }
-      
-      gameState.INIT_AMMO:
-        // ADDC: ammo = 0+8
-        alufn = 6b000000; bsel = 1; c = 16h0008;
-        ra = 7h50; rb = 7h0; rc = 7h55; we = 1; sr = 0;
-        
-        debugSeg = 16h0004;
-        if (slow_clock_edge_detector.out == 1){
+          debugSeg = 16h0002;
           gameState.d = gameState.PLAY;
         }
       
@@ -197,20 +175,19 @@ module gameCU (
       /// ********* TIMER ********** ///
       gameState.TIMER_CHECK:
         // CMPEQ: time == 0
-        alufn = b100001; bsel = 0; c = 16b0;
-        ra = 7h4A; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-
         debugSeg = 16h0010;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100001; bsel = 0; c = 16b0;
+          ra = 7h4A; rb = 7h50; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.TIME_CHECK_DANGER;
         }
         
       gameState.TIME_CHECK_DANGER:
         // CMPLT: time <= 10 
-        alufn = b100011; bsel = 0; c = 16hA;
-        ra = 7h4A; rb = 7h50; rc = 7h4C; we = 1; sr = 0;
-        
+        debugSeg = 16h0011;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100011; bsel = 0; c = 16hA;
+          ra = 7h4A; rb = 7h50; rc = 7h4C; we = 1; sr = 0;
           gameState.d = gameState.TIME_SET_DANGER;
         }
         
@@ -239,21 +216,21 @@ module gameCU (
       
       gameState.TIMER_DECREASE:
         // SUB: decrease timer by 1
-        alufn = b000001; bsel = 0; c = 16b0;
-        ra = 7h4A; rb = 7h51; rc = 7h4A; we = 1; sr = 0;
-        
         debugSeg = 16h0012;
-        gameState.d = gameState.PLAY;
+        if (slow_clock_edge_detector.out == 1){
+            alufn = b000001; bsel = 0; c = 16b0;
+            ra = 7h4A; rb = 7h51; rc = 7h4A; we = 1; sr = 0;
+            gameState.d = gameState.PLAY;
+        }
       
       
       /// ********* MOVE PLAYER ********** ///
       gameState.LEFT_CHECK:
         // CMPLT: player pos < 0
-        alufn = b100011; bsel = 0; c = 16b0;
-        ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        
         debugSeg = 16h0020;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100011; bsel = 0; c = 16b0;
+          ra = 7h56; rb = 7h50; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.LEFT_BRANCH;
         }
       
@@ -270,21 +247,19 @@ module gameCU (
       
       gameState.LEFT_REPOS:
         // SUB: move player left
-        alufn = b000001; bsel = 0; c = 16b0;
-        ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 0;
-        
         debugSeg = 16h0022;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b000001; bsel = 0; c = 16b0;
+          ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 0;
           gameState.d = gameState.COUNT_BOMBS_INIT;
         }
       
       gameState.RIGHT_CHECK:
         // CMPLEC: player pos < 7
-        alufn = b100011; bsel = 1; c = 16h0007;
-        ra = 7h56; rb = 7h00; rc = 7h48; we = 1; sr = 0;
-        
         debugSeg = 16h0023;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100011; bsel = 1; c = 16h0007;
+          ra = 7h56; rb = 7h00; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.RIGHT_BRANCH;
         }
       
@@ -301,21 +276,19 @@ module gameCU (
       
       gameState.RIGHT_REPOS:
         // ADD: move player right
-        alufn = b000000; bsel = 0; c = 16b0;
-        ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 0;
-        
         debugSeg = 16h0025;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b000000; bsel = 0; c = 16b0;
+          ra = 7h56; rb = 7h51; rc = 7h56; we = 1; sr = 0;
           gameState.d = gameState.COUNT_BOMBS_INIT;
         }
       
       gameState.SHOOT_AMMO_CHECK:
         // CMPLT: ammo_left < 0
-        alufn = b100101; bsel = 0; c = 0;
-        ra = 7h55; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        
         debugSeg = 16h0026;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100101; bsel = 0; c = 0;
+          ra = 7h55; rb = 7h50; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.SHOOT_AMMO_BRANCH;
         }
       
@@ -334,21 +307,19 @@ module gameCU (
       
       gameState.SHOOT_INIT_BOMB_POS:
         //ADD: check_bomb_pos = player_row + 0
-        alufn = b000000; bsel = 0; c = 0;
-        ra = 7h56; rb = 7h50; rc = 7h4B;
-
         debugSeg = 16h0028;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b000000; bsel = 0; c = 0;
+          ra = 7h56; rb = 7h50; rc = 7h4B;
           gameState.d = gameState.SHOOT_BOMB_CHECK;
         }
       
       gameState.SHOOT_BOMB_CHECK:
         //CMPEQ: reg[check_bomb_pos] == 1
-        alufn = b100001; bsel = 0; c = 0;
-        ra = reg4B; rb = 7h51; rc = 7h48;
-
         debugSeg = 16h0029;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100001; bsel = 0; c = 0;
+          ra = reg4B; rb = 7h51; rc = 7h48;
           gameState.d = gameState.SHOOT_BOMB_BRANCH;
         }
       
@@ -378,11 +349,10 @@ module gameCU (
       
       gameState.SHOOT_DELETE_BOMB:
         //SUB: reg[check_bomb_pos] -= 1
-        alufn = b000001; bsel = 0; c = 0;
-        ra = reg4B; rb = 7h51; rc = reg4B;
-
         debugSeg = 16h0032;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b000001; bsel = 0; c = 0;
+          ra = reg4B; rb = 7h51; rc = reg4B;
           gameState.d = gameState.COUNT_BOMBS_INIT;
         }
       
@@ -390,31 +360,28 @@ module gameCU (
       /// ***** COUNT BOMBS ***** ///
       gameState.COUNT_BOMBS_INIT:
         // ADD: bomb_count = 0 + 0
-        alufn = b000000; bsel = 1; c = 0;
-        ra = 7h50; rb = 7h00; rc = 7h49; we = 1; sr = 0;
-        
         debugSeg = 16h0040;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b000000; bsel = 1; c = 0;
+          ra = 7h50; rb = 7h00; rc = 7h49; we = 1; sr = 0;
           gameState.d = gameState.COUNT_BOMBS_INIT_POS;
         }
         
       gameState.COUNT_BOMBS_INIT_POS:
         // ADD: check_bomb_pos = 0 + 0
-        alufn = b000000; bsel = 1; c = 0;
-        ra = 7h50; rb = 7h00; rc = 7h4B; we = 1; sr = 0;
-        
         debugSeg = 16h0041;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b000000; bsel = 1; c = 0;
+          ra = 7h50; rb = 7h00; rc = 7h4B; we = 1; sr = 0;
           gameState.d = gameState.COUNT_BOMBS_CHECK;
         }
       
       gameState.COUNT_BOMBS_CHECK:
         // CMPEQ: reg[check_bomb_pos] == 1
-        alufn = b100001; bsel = 1; c = 1;
-        ra = reg4B; rb = 7h00; rc = 7h48; we = 0; sr = 0;
-        
         debugSeg = 16h0042;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100001; bsel = 1; c = 1;
+          ra = reg4B; rb = 7h00; rc = 7h48; we = 0; sr = 0;
           gameState.d = gameState.COUNT_BOMBS_INCREMENT_BOMBS;
         }
 
@@ -444,21 +411,19 @@ module gameCU (
       /// ***** UPDATE LIVES ***** ///
       gameState.UPDATE_LIVES:
         // SUB: lives_left -= bomb_count
-        alufn = b000001; bsel = 0; c = 0;
-        ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
-        
         debugSeg = 16h0050;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b000001; bsel = 0; c = 0;
+          ra = 7h54; rb = 7h49; rc = 7h54; we = 1; sr = 0;
           gameState.d = gameState.CHECK_PLAYER_LIVES;
         }
             
       gameState.CHECK_PLAYER_LIVES:
         // CMPLT: lives_left < 0
-        alufn = b100011; bsel = 0; c = 0;
-        ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        
         debugSeg = 16h0051;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100011; bsel = 0; c = 0;
+          ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.ALIVE_BRANCH;
         }
         
@@ -478,11 +443,10 @@ module gameCU (
       // Check whether game ends before updating the board
       gameState.UPDATE_BOARD:
         // CMPEQ: lines_left == 0
-        alufn = b100001; bsel = 0; c = 16b0;
-        ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
-        
         debugSeg = 16h0060;
         if (slow_clock_edge_detector.out == 1){
+          alufn = b100001; bsel = 0; c = 16b0;
+          ra = 7h53; rb = 7h50; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.UPDATE_BOARD_BRANCH;
         }
         
@@ -500,11 +464,10 @@ module gameCU (
             
       gameState.UPDATE_ROWS:
         // shift down by 1 row, ADDC: R50 += 0
-        alufn = 6b000000; bsel = 1; c = 16h0000;
-        ra = 7h50; rb = 7h0; rc = 7h50; we = 1; sr = 1;
-        
         debugSeg = 16h0062;
         if (slow_clock_edge_detector.out == 1){
+          alufn = 6b000000; bsel = 1; c = 16h0000;
+          ra = 7h50; rb = 7h0; rc = 7h50; we = 1; sr = 1;
           gameState.d = gameState.DECREMENT_ROW;
         }
             
@@ -512,10 +475,9 @@ module gameCU (
       gameState.DECREMENT_ROW:
         // SUB : lines_left = lines_left - 1
         debugSeg = 16h0063;
-        alufn = b000001; bsel = 0; c = 16b0;
-        ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 0;
-        
         if (slow_clock_edge_detector.out == 1){
+          alufn = b000001; bsel = 0; c = 16b0;
+          ra = 7h53; rb = 7h51; rc = 7h53; we = 1; sr = 0;
           gameState.d = gameState.PLAY; // Game state to wait for input from player
         }
         
