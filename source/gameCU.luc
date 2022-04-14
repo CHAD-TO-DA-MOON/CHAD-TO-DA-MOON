@@ -16,7 +16,8 @@ module gameCU (
     output rb[7],     // read address b
     output rc[7],     // write address c
     output we,        // write enable
-    output sr,     // update board gameState regs
+    output sr,        // update board gameState regs
+    output gameReset, // reset regfile
     
     output ioState[2],// 0: blank, 1: win, 2: lose, 3: low time
     output debugSeg[16] // 7seg debug output
@@ -35,6 +36,7 @@ module gameCU (
     fsm gameState(#INIT(IDLE)) = {
       IDLE, // await start game, initialise board
       INIT_TIMER, // start timer
+      INIT_REGFILE, // start regfile
       PLAY, // await player action
       
       TIMER_CHECK, // check if game ended, decrease otherwise
@@ -100,6 +102,7 @@ module gameCU (
     alufn = 6b0; bsel = 0; c = 16h0000;
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 0;
     ioState = 2h0;
+    gameReset = 0;
     debugSeg = 16h0000;
     
     //edge detectors
@@ -126,14 +129,20 @@ module gameCU (
       
       gameState.INIT_TIMER:
         // ADDC: timer = 0+30
+        debugSeg = 16h0002;
         if (slow_clock_edge_detector.out == 1){
           alufn = 6b000000; bsel = 1; c = 16h001E;
           ra = 7h50; rb = 7h0; rc = 7h4A; we = 1; sr = 0;
-        
-          debugSeg = 16h0002;
+          gameState.d = gameState.INIT_REGFILE;
+        }
+
+      gameState.INIT_REGFILE:
+        debugSeg = 16h0003;
+        if (slow_clock_edge_detector.out == 1){
+          gameReset = 1;
           gameState.d = gameState.PLAY;
         }
-      
+            
       gameState.PLAY:
         debugSeg = 16h0005;
         alufn = b000000; bsel = 0; c = 16h0;
