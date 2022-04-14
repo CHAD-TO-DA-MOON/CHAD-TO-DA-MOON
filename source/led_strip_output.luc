@@ -39,7 +39,6 @@ module led_strip_output (
   }
   
   var row, col;
-  sig flash_color[24];
   sig game_leds[10][10][24];
   decoder player_pos_decoder(#WIDTH(3));
   column_shader player_column_shader;
@@ -70,13 +69,7 @@ module led_strip_output (
       }
     }
     
-    // Initialise idle screen
-    counter.d = counter.q + 1;
-    
-    if (check_idle == 1) {
-         game_leds[4][3+counter.q[24:22]] = 24h0F0F0F; 
-    }
-    
+
     // build flash_status
     counter.d = counter.q + 1;
     
@@ -94,8 +87,14 @@ module led_strip_output (
         game_leds[9][9] = MAIN_BOARD_COLOR[flash_status[1:0]];
     }
     
+    // Initialise idle screen
+    if (check_idle == 1) {
+      game_leds = 10x{{10x{{24b0}}}};
+      game_leds[4][3+counter.q[24:23]] = 24h0F0F0F; 
+    }
+    
     // shade the player's column 
-    player_column_shader.enable = 1;
+    player_column_shader.enable = ~check_idle;
     player_column_shader.game_led_in = game_leds;
     player_column_shader.shadow_color = 24hF0F0F0; // make the column shaded with grey
     player_column_shader.shadow_column = player_pos + 1;

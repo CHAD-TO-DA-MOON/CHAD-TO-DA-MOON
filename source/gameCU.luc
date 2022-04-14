@@ -198,7 +198,7 @@ module gameCU #(
         // CMPLT: time <= 10 
         debugSeg = 16h0011;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = b100011; bsel = 0; c = 16hA;
+          alufn = b100011; bsel = 1; c = 16hA;
           ra = 7h4A; rb = 7h50; rc = 7h4C; we = 1; sr = 0;
           gameState.d = gameState.TIME_SET_DANGER;
         }
@@ -207,7 +207,7 @@ module gameCU #(
         // set danger if time <= 10 and danger state has not been set
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           if (reg4C || (debugIn[0] && debugIn[1])) {
-            alufn = b000000; bsel = 0; c = 16h3;
+            alufn = b000000; bsel = 1; c = 16h3;
             ra = 7h50; rb = 7h50; rc = 7h57; we = 1; sr = 0;
             gameState.d = gameState.TIMER_BRANCH;
           } else {
@@ -495,7 +495,7 @@ module gameCU #(
         
       /// ********* END GAME ********** ///
       gameState.WIN:
-        alufn = b000000; bsel = 0; c = 16h1;
+        alufn = b000000; bsel = 1; c = 16h1;
         ra = 7h50; rb = 7h50; rc = 7h57; we = 1; sr = 0;
         
         if (buttons[0] || buttons[1] || buttons[2]) {
@@ -504,7 +504,7 @@ module gameCU #(
         debugSeg = 16h0070;
         
       gameState.LOSE:
-        alufn = b000000; bsel = 0; c = 16h2;
+        alufn = b000000; bsel = 1; c = 16h2;
         ra = 7h50; rb = 7h50; rc = 7h57; we = 1; sr = 0;
         
         if (buttons[0] || buttons[1] || buttons[2]) {
