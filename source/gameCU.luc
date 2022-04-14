@@ -19,7 +19,6 @@ module gameCU (
     output sr,        // update board gameState regs
     output gameReset, // reset regfile
     
-    output ioState[2],// 0: blank, 1: win, 2: lose, 3: low time
     output debugSeg[16] // 7seg debug output
   ) {
   
@@ -101,7 +100,6 @@ module gameCU (
     // default control signals
     alufn = 6b0; bsel = 0; c = 16h0000;
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 0;
-    ioState = 2h0;
     gameReset = 0;
     debugSeg = 16h0000;
     
