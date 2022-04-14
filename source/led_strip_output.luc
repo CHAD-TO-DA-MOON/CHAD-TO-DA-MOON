@@ -6,6 +6,7 @@ module led_strip_output (
     input ammo_left[16],
     input player_pos[16],
     input flash_status[16],
+    input check_idle[1],
     output current_led_bit
   ) {
   
@@ -41,7 +42,6 @@ module led_strip_output (
   sig flash_color[24];
   sig game_leds[10][10][24];
   decoder player_pos_decoder(#WIDTH(3));
-  decoder flash_color_decoder(#WIDTH(2)); // 2 bits for indexing 4 colours
   column_shader player_column_shader;
   
   always {
@@ -70,18 +70,22 @@ module led_strip_output (
       }
     }
     
+    // Initialise idle screen
+    counter.d = counter.q + 1;
     
-    // TODO: flashing module
+    if (check_idle == 1) {
+         game_leds[4][3+counter.q[24:22]] = 24h0F0F0F; 
+    }
+    
     // build flash_status
     counter.d = counter.q + 1;
-    flash_color_decoder.in = flash_status[1:0];
     
     case (counter.q[24]){
       b0:
-        game_leds[0][0] = 24h0F0F0F;
-        game_leds[0][9] = 24h0F0F0F;
-        game_leds[9][0] = 24h0F0F0F;
-        game_leds[9][9] = 24h0F0F0F; 
+        game_leds[0][0] = 24h000000;
+        game_leds[0][9] = 24h000000;
+        game_leds[9][0] = 24h000000;
+        game_leds[9][9] = 24h000000; 
     
       b1: 
         game_leds[0][0] = MAIN_BOARD_COLOR[flash_status[1:0]];
