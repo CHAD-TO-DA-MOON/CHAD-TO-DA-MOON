@@ -25,7 +25,9 @@ module regfile #(
     
     output check_48[16],
     output check_bomb_4B[16],
-    output check_danger_4C[16]
+    output check_danger_4C[16],
+    
+    output debugLed[24]
   ) {
   
  sig reg_out[102][16]; // 102 to be edited
@@ -70,6 +72,11 @@ two_to_sixteen sixteen[72];
     check_bomb_4B = reg_out[h4B];
     check_danger_4C = reg_out[h4C];
     
+    // FPGA debug led
+    debugLed[7:0] = reg_out[h54];
+    debugLed[15:8] = reg_out[h56];
+    debugLed[23:16] = reg_out[h4B];
+        
     if(we) {
       if(sr) {
         new_row = $build(data_in, 8);

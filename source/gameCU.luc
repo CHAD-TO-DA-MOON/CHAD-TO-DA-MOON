@@ -19,8 +19,7 @@ module gameCU (
     output sr,     // update board gameState regs
     
     output ioState[2],// 0: blank, 1: win, 2: lose, 3: low time
-    output debugSeg[16], // 7seg debug output
-    output debugLed[16]  // led debug output
+    output debugSeg[16] // 7seg debug output
   ) {
   
   // TODOS
@@ -541,8 +540,5 @@ module gameCU (
         debugSeg = 16h0071;
         
       } // end fsm
-      
-      debugLed[7:0] = 8h03;
-      debugLed[15:8] = 8h03;
     }
   }

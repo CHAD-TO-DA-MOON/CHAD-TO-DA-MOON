@@ -69,6 +69,7 @@ module au_top (
     
     io_led[0] = beta.debugLed[7:0];
     io_led[1] = beta.debugLed[15:8];
+    io_led[2] = beta.debugLed[23:16];
     
     // led_strip_writer
     led_strip_writer.update = 1; //sample write
