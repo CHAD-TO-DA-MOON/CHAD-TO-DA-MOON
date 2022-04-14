@@ -31,16 +31,7 @@ module gameBeta (
     cu.reg48 = regfile.check_48; // placeholder for reg[0x48]
     cu.reg4B = regfile.check_bomb_4B; // placeholder for reg[0x48]
     cu.reg4C = regfile.check_danger_4C; // placeholder for reg[0x4C]
-    cu.debugIn = debugIn;
-    
-    // REGFILE
-    regfile.ra = cu.ra;
-    regfile.rb = cu.rb;
-    regfile.rc = cu.rc;
-    regfile.we = cu.we;
-    regfile.sr = cu.sr;
-    regfile.game_reset = 0;
-    regfile.data_in = 0;
+    cu.debugIn = debugIn;   
     
     // ALU
     case(cu.bsel) {
@@ -60,6 +51,15 @@ module gameBeta (
       1: data_in = 0; // placeholder for rom
       default: data_in = 0;
     }
+    
+    // REGFILE
+    regfile.ra = cu.ra;
+    regfile.rb = cu.rb;
+    regfile.rc = cu.rc;
+    regfile.we = cu.we;
+    regfile.sr = cu.sr;
+    regfile.data_in = data_in;
+    regfile.game_reset = rst;
     
     // DEBUG
     debugSeg = cu.debugSeg;
