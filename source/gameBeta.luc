@@ -4,13 +4,12 @@ module gameBeta (
     input buttons[3], // button input, 0-2 left to right
     input debugIn[16],// debug inputs to trigger game states
     output debugSeg[16],
-    output debugLed[16],
+    output debugLed[24]
     output outled
   ) {
   
   gameAlu alu;
   sig aluB[16];
-  sig data_in[16];
   
   .clk(clk) {
     edge_detector edTimer(#RISE(1), #FALL(0));
@@ -42,7 +41,6 @@ module gameBeta (
     regfile.we = cu.we;
     regfile.sr = cu.sr;
     regfile.game_reset = 0;
-    regfile.data_in = 0;
     
     
     // ALU
@@ -59,14 +57,14 @@ module gameBeta (
     
     // WDSEL
     case(cu.sr) {
-      0: data_in = alu.out;
-      1: data_in = 0; // placeholder for rom
-      default: data_in = 0;
+      0: regfile.data_in = alu.out;
+      1: regfile.data_in = 0; // placeholder for rom
+      default: regfile.data_in = 0;
     }
     
     // DEBUG
     debugSeg = cu.debugSeg;
-    debugLed = cu.debugLed;
+    debugLed = regfile.debugLed;
     
     // connect led_strip_output with regfile
     outled = led_strip.current_led_bit;
