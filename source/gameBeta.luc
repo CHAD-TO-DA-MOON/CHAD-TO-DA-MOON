@@ -64,6 +64,7 @@ module gameBeta (
     regfile.rc = cu.rc;
     regfile.we = cu.we;
     regfile.sr = cu.sr;
+    regfile.game_reset = cu.gameReset;
     regfile.data_in = data_in;
     regfile.game_reset = rst;
     
