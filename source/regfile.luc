@@ -56,6 +56,8 @@ two_to_sixteen sixteen[72];
     sixteen.in = reg2.q;
     reg_out[71:0] = sixteen.out;
     reg_out[101:72] = reg16.q[29:0];
+    reg_out[h50] = 0;
+    reg_out[h51] = 1;
     
     ra_data = reg_out[ra];
     rb_data = reg_out[rb];
