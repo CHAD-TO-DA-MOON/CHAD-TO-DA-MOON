@@ -22,14 +22,12 @@ module led_strip_output (
   // const AMMO_COLOR = {24h0, 24hFFFFFF}; // TODO? color ammo
   // const PLAYER_COLOR = {24h0, 24hFFFFFF}; // TODO? color player
   
-  
   const MAIN_BOARD_COLOR = {
-    24h0000FF,  // blue-green <- status:11
+    24hFF00FF,  // blue-green <- status:11
     24hFFFF00, // purple <- status:10
     24h00FF00, // red <- status:01
-    24hFFFFFF // black <- status:00
+    24h000000 // black <- status:00
   }; 
-  
   
   const FLASH_COLOR = {
     24hFFFF00, // purple: time low
@@ -49,12 +47,10 @@ module led_strip_output (
   
   var row, col;
   sig game_leds[10][10][24];
-  sig shaded_enable;
   decoder player_pos_decoder(#WIDTH(3));
   column_shader player_column_shader;
   
   always {
-    shaded_enable = 1;
     game_leds = 10x{{10x{{24b0}}}};
     // build player
     player_pos_decoder.in = player_pos[2:0];
@@ -80,11 +76,6 @@ module led_strip_output (
       }
     }
     
-    // black screen if status is win or lose
-    if (flash_status[1:0] == 1 || flash_status[1:0] == 2){
-        shaded_enable = 0;
-        game_leds = 10x{{10x{{24b0}}}};
-    }
 
     // build flash_status
     counter.d = counter.q + 1;
@@ -105,13 +96,12 @@ module led_strip_output (
     
     // Initialise idle screen
     if (check_idle == 1) {
-      shaded_enable = 0;
       game_leds = 10x{{10x{{24b0}}}};
       game_leds[4][3+counter.q[24:23]] = 24h0F0F0F; 
     }
     
     // shade the player's column 
-    player_column_shader.enable = shaded_enable;
+    player_column_shader.enable = ~check_idle;
     player_column_shader.game_led_in = game_leds;
     player_column_shader.shadow_color = 24hF0F0F0; // make the column shaded with grey
     player_column_shader.shadow_column = player_pos + 1;
