@@ -1,5 +1,5 @@
 module gameCU #(
-    MAX_LINES = 19
+    MAX_LINES = 28
   )(
     input clk,        // clock
     input rst,        // reset
