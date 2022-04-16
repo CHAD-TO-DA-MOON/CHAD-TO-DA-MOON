@@ -54,10 +54,12 @@ const MAIN_BOARD_COLOR = {
   
   var row, col;
   sig game_leds[10][10][24];
+  sig shadow_enable;
   decoder player_pos_decoder(#WIDTH(3));
   column_shader player_column_shader;
   
   always {
+    shadow_enable = 1;
     game_leds = 10x{{10x{{24b0}}}};
     // build player
     player_pos_decoder.in = player_pos[2:0];
@@ -83,6 +85,10 @@ const MAIN_BOARD_COLOR = {
       }
     }
     
+    if (flash_status[1:0] == 1 || flash_status[1:0] == 2) {
+      shadow_enable = 0;
+      game_leds = 10x{{10x{{24b0}}}};
+    }
 
     // build flash_status
     counter.d = counter.q + 1;
@@ -103,6 +109,7 @@ const MAIN_BOARD_COLOR = {
     
     // Initialise idle screen
     if (check_idle == 1) {
+      shadow_enable = 0;
       game_leds = 10x{{10x{{24b0}}}};
       game_leds[4][3+counter.q[24:23]] = 24h0F0F0F; 
     }
