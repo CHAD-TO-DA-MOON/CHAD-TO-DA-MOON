@@ -14,20 +14,15 @@ module gameBeta (
   sig data_in[16];
   
   .clk(clk) {
-    edge_detector edTimer(#RISE(1), #FALL(0));
     
     .rst(rst) {
       gameCU cu;
       regfile regfile;
-      counter slowTimer(#SIZE(1), #DIV(26));
       led_strip_output led_strip;
     }
   }
 
   always {
-    // Timer
-    edTimer.in = slowTimer.value;
-    cu.timerTick = edTimer.out;
     
     // CU - bootstrap branching reg to CU
     cu.buttons = buttons;    

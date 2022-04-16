@@ -7,7 +7,6 @@ module gameCU #(
     input reg48[16],  // branching reg
     input reg4C[16],  // danger reg
     input reg4B[16],  // reference reg
-    input timerTick,  // 1 when timer should update (edge detector)
     input debugIn[16],// debug inputs to trigger game states
     
     output alufn[6],  // define ALU op
@@ -332,7 +331,7 @@ module gameCU #(
         debugSeg = 16h0029;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           alufn = b100001; bsel = 0; c = 0;
-          ra = reg4B; rb = 7h51; rc = 7h48; we = 1; sr = 0;
+          ra = reg4B[6:0]; rb = 7h51; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.SHOOT_BOMB_BRANCH;
         }
       
@@ -366,7 +365,7 @@ module gameCU #(
         debugSeg = 16h0033;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           alufn = b000001; bsel = 0; c = 0;
-          ra = reg4B; rb = 7h51; rc = reg4B; we = 1; sr = 0;
+          ra = reg4B[6:0]; rb = 7h51; rc = reg4B[6:0]; we = 1; sr = 0;
           gameState.d = gameState.COUNT_BOMBS_INIT;
         }
       
@@ -395,7 +394,7 @@ module gameCU #(
         debugSeg = 16h0042;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
           alufn = b100001; bsel = 0; c = 0;
-          ra = reg4B; rb = 7h51; rc = 7h48; we = 1; sr = 0;
+          ra = reg4B[6:0]; rb = 7h51; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.COUNT_BOMBS_INCREMENT_BOMBS;
         }
 
