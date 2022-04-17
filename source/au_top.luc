@@ -59,7 +59,8 @@ module au_top (
     
     beta.debugIn[7:0] = io_dip[0];
     beta.debugIn[15:8] = io_dip[1];
-    
+    beta.debugIn[23:16] = io_dip[2];
+   
     // 7segment
     multiSeg.values = $build(beta.debugSeg, 4);
     io_seg = ~multiSeg.seg;

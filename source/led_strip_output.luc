@@ -30,10 +30,10 @@ module led_strip_output (
   }; 
   
 const MAIN_BOARD_COLOR = {
-    24h000000,  // blue-green <- status:11
+    24h000000,  // black <- status:11
     24hFFFF00, // purple <- status:10
     24h00FF00, // red <- status:01
-    24h010101 // black <- status:00
+    24h080808 // grey <- status:00
   }; 
   
   const FLASH_COLOR = {
@@ -115,9 +115,9 @@ const MAIN_BOARD_COLOR = {
     }
     
     // shade the player's column 
-    player_column_shader.enable = ~check_idle;
+    player_column_shader.enable = shadow_enable;
     player_column_shader.game_led_in = game_leds;
-    player_column_shader.shadow_color = 24hF00000; // make the column shaded with grey
+    player_column_shader.shadow_color[23:16] = 8h0C; // make the column shaded with blue
     player_column_shader.shadow_column = player_pos + 1;
      
     // connect to ws2812b_writer

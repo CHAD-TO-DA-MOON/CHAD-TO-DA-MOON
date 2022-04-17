@@ -81,6 +81,7 @@ two_to_sixteen sixteen[72];
     debugLed[7:0] = reg_out[h54];
     debugLed[15:8] = reg_out[h56];
     debugLed[23:16] = reg_out[h4A];
+    debugLed[23:16] = reg_out[h53];
         
     if(we) {
       if(sr) {

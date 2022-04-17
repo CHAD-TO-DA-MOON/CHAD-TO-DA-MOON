@@ -435,7 +435,7 @@ module gameCU #(
         // CMPLT: lives_left < 0
         debugSeg = 16h0051;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = b100011; bsel = 0; c = 0;
+          alufn = b100101; bsel = 0; c = 0;
           ra = 7h54; rb = 7h50; rc = 7h48; we = 1; sr = 0;
           gameState.d = gameState.ALIVE_BRANCH;
         }
