@@ -95,6 +95,8 @@ module gameCU #(
     
     .rst(rst) {
       counter slow_timer(#SIZE(1),#DIV(26));  // slow clock
+      dff totalTime[16](#INIT(30));
+      dff warningTime[16](#INIT(10));
     }
     
   }
@@ -119,6 +121,19 @@ module gameCU #(
         debugSeg = 16h0001;
         check_idle = b1;
         if (buttons[0] || buttons[1] || buttons[2]) {
+          if(buttons[0]) {
+            totalTime.d = 30;
+            warningTime.d = 10;
+          } 
+          if(buttons[1]) {
+            totalTime.d = 9;
+            warningTime.d = 3;
+          }
+          if(buttons[2]) {
+            totalTime.d = 5;
+            warningTime.d = 2;
+          }
+          
           // shift down by 1 row, ADDC: R50 += 0
           alufn = 6b000000; bsel = 1; c = 16h0000;
           ra = 7h50; rb = 7h0; rc = 7h50; we = 1; sr = 1;
@@ -138,10 +153,10 @@ module gameCU #(
         }
         
       gameState.INIT_TIMER:
-        // ADDC: timer = 0+7
+        // ADDC: timer = 0+totalTime
         debugSeg = 16h0003;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = 6b000000; bsel = 1; c = 16h7;
+          alufn = 6b000000; bsel = 1; c = totalTime.q;
           ra = 7h50; rb = 7h0; rc = 7h4A; we = 1; sr = 0;
           gameState.d = gameState.PLAY;
         }
@@ -195,10 +210,10 @@ module gameCU #(
         }
         
       gameState.TIME_CHECK_DANGER:
-        // CMPLT: time <= 2
+        // CMPLT: time <= warningTime
         debugSeg = 16h0011;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = b100011; bsel = 1; c = 16h2;
+          alufn = b100011; bsel = 1; c = warningTime.q;
           ra = 7h4A; rb = 7h50; rc = 7h4C; we = 1; sr = 0;
           gameState.d = gameState.TIME_SET_DANGER;
         }
