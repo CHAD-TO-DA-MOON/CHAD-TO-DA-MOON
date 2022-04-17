@@ -1,5 +1,5 @@
 module gameCU #(
-    MAX_LINES = 28
+    MAX_LINES = 32
   )(
     input clk,        // clock
     input rst,        // reset
@@ -100,7 +100,7 @@ module gameCU #(
   }
   
   always {
-    // default control signals
+    // default control signals000000
     alufn = 6b0; bsel = 0; c = 16h0000;
     ra = 7h0; rb = 7h0; rc = 7h0; we = 0; sr = 0;
     gameReset = 0;
@@ -138,10 +138,10 @@ module gameCU #(
         }
         
       gameState.INIT_TIMER:
-        // ADDC: timer = 0+30
+        // ADDC: timer = 0+7
         debugSeg = 16h0003;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = 6b000000; bsel = 1; c = 16h001E;
+          alufn = 6b000000; bsel = 1; c = 16h7;
           ra = 7h50; rb = 7h0; rc = 7h4A; we = 1; sr = 0;
           gameState.d = gameState.PLAY;
         }
@@ -195,10 +195,10 @@ module gameCU #(
         }
         
       gameState.TIME_CHECK_DANGER:
-        // CMPLT: time <= 10 
+        // CMPLT: time <= 2
         debugSeg = 16h0011;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          alufn = b100011; bsel = 1; c = 16hA;
+          alufn = b100011; bsel = 1; c = 16h2;
           ra = 7h4A; rb = 7h50; rc = 7h4C; we = 1; sr = 0;
           gameState.d = gameState.TIME_SET_DANGER;
         }
@@ -351,7 +351,7 @@ module gameCU #(
         // SHOOT_BOMB_CHECK if check_bomb_pos < 72; COUNT_BOMBS_INIT otherwise
         debugSeg = 16h0032;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          if (reg4B < 7h72){
+          if (reg4B < 72){
             //ADD: check_bomb_pos += 8
             alufn = b000000; bsel = 1; c = 16h0008;
             ra = 7h4B; rb = 7h00; rc = 7h4B; we = 1; sr = 0;
@@ -411,7 +411,7 @@ module gameCU #(
       gameState.COUNT_BOMBS_CHECKINCREMENT_POS:
         debugSeg = 16h0044;
         if (debugIn[15] || slow_clock_edge_detector.out == 1){
-          if (reg4B < 7h08){ 
+          if (reg4B < 7h07){ 
             //ADD
             alufn = b000000; bsel = 0; c = 0;
             ra = 7h4B; rb = 7h51; rc = 7h4B; we = 1; sr = 0;
